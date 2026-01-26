@@ -1,0 +1,176 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "Adamantite.core",
+					"jsonFile" : "directory-Adamantite.core-Debug-a86e3435951ffb6b9d3a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Adamantite.core",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "Adamantite.sound",
+					"jsonFile" : "directory-Adamantite.sound-Debug-4eadd0fc9885ca8c8089.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Adamantite.sound",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "Adamantite.html",
+					"jsonFile" : "directory-Adamantite.html-Debug-570e1e12911a8b27ca0c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Adamantite.html",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "Adamantite.video",
+					"jsonFile" : "directory-Adamantite.video-Debug-9eb392bb01b173aec505.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Adamantite.video",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "Adamantite.runtime",
+					"jsonFile" : "directory-Adamantite.runtime-Debug-5ff99691a2511f23c33f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Adamantite.runtime",
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					],
+					"name" : "Adamantite",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "Adamantite.core::@fcdcbc946cc2fb4ab2d0",
+					"jsonFile" : "target-Adamantite.core-Debug-ff20c7b0934594511663.json",
+					"name" : "Adamantite.core",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "Adamantite.html::@6858bd6383ae98310a77",
+					"jsonFile" : "target-Adamantite.html-Debug-2352b0789049f5bac64e.json",
+					"name" : "Adamantite.html",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "Adamantite.runtime::@8f0e92c39fbb5910f047",
+					"jsonFile" : "target-Adamantite.runtime-Debug-515d6f19103d11744e4f.json",
+					"name" : "Adamantite.runtime",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "Adamantite.sound::@e0da672fb1d5f47e5434",
+					"jsonFile" : "target-Adamantite.sound-Debug-2a9dd4a2edc1dbe1dd1e.json",
+					"name" : "Adamantite.sound",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "Adamantite.video::@323460d87e0a4fbc0832",
+					"jsonFile" : "target-Adamantite.video-Debug-89a709eaa358c75d44b8.json",
+					"name" : "Adamantite.video",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Adamantite/out/build/x64-debug",
+		"source" : "D:/Adamantite"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}

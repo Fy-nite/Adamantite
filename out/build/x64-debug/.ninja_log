@@ -1,0 +1,24 @@
+# ninja log v6
+7	1199	7911328388508629	Adamantite.runtime/CMakeFiles/Adamantite.runtime.dir/Adamantite.cpp.obj	3ba7fb7420f79a4c
+31	1214	7911341844837490	Adamantite.html/CMakeFiles/AdamantiteRuntime.dir/Adamantite.cpp.obj	770972455f502503
+1205	1259	7911341856579580	Adamantite.core/Adamantite.core.lib	24109a4a29b532f3
+760	885	7911361124551337	Adamantite.runtime/Adamantite.runtime.exe	913c8c7bdee76e2a
+15	805	7911342277773720	Adamantite.video/CMakeFiles/Adamantite.video.dir/Adamantite.cpp.obj	821bc78c8b46f908
+19	1227	7911341844723798	Adamantite.sound/CMakeFiles/Adamantite.sound.dir/Adamantite.cpp.obj	75e1d3f079fa12e8
+806	850	7911342285676530	Adamantite.video/Adamantite.video.lib	32249854030d6efc
+12	1205	7911341844648010	Adamantite.core/CMakeFiles/Adamantite.core.dir/Adamantite.cpp.obj	18d0e48653353512
+1215	1268	7911341856674711	Adamantite.html/AdamantiteRuntime.lib	33e41b826c9eb23a
+1228	1280	7911341856809226	Adamantite.sound/Adamantite.sound.lib	ead9939b2724afac
+10	1045	7911356016197086	Adamantite.html/CMakeFiles/Adamantite.html.dir/Adamantite.cpp.obj	5fe8c3ed4b0e4f89
+715	760	7911361124115294	Adamantite.html/Adamantite.html.lib	3f0a0041c06ed96b
+11	715	7911361117063602	Adamantite.html/CMakeFiles/Adamantite.html.dir/generator.cpp.obj	4d401cc7914cd9b8
+8	746	7911370841745786	Adamantite.core/CMakeFiles/Adamantite.core.dir/Logging.cpp.obj	a3923b8e9c9b930f
+26	77	7911375221712865	Adamantite.core/Adamantite.core.lib	8b24f284794cfa30
+33	755	7911375221781504	Adamantite.runtime/CMakeFiles/Adamantite.runtime.dir/Adamantite.cpp.obj	3ba7fb7420f79a4c
+756	981	7911375229010949	Adamantite.runtime/Adamantite.runtime.exe	913c8c7bdee76e2a
+11	1016	7911383588218736	Adamantite.runtime/CMakeFiles/Adamantite.runtime.dir/Adamantite.cpp.obj	3ba7fb7420f79a4c
+1017	1233	7911383598295860	Adamantite.runtime/Adamantite.runtime.exe	913c8c7bdee76e2a
+33	1090	7911396797703474	Adamantite.runtime/CMakeFiles/Adamantite.runtime.dir/Adamantite.cpp.obj	3ba7fb7420f79a4c
+28	1187	7911396797658128	Adamantite.core/CMakeFiles/Adamantite.core.dir/Logging.cpp.obj	a3923b8e9c9b930f
+1187	1241	7911396809244656	Adamantite.core/Adamantite.core.lib	8b24f284794cfa30
+1241	1478	7911396809788340	Adamantite.runtime/Adamantite.runtime.exe	913c8c7bdee76e2a

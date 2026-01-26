@@ -1,0 +1,17 @@
+D:/Adamantite/out/build/x64-debug/CMakeFiles/edit_cache.dir
+D:/Adamantite/out/build/x64-debug/CMakeFiles/rebuild_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.core/CMakeFiles/Adamantite.core.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.core/CMakeFiles/edit_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.core/CMakeFiles/rebuild_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.sound/CMakeFiles/Adamantite.sound.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.sound/CMakeFiles/edit_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.sound/CMakeFiles/rebuild_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.html/CMakeFiles/Adamantite.html.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.html/CMakeFiles/edit_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.html/CMakeFiles/rebuild_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.video/CMakeFiles/Adamantite.video.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.video/CMakeFiles/edit_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.video/CMakeFiles/rebuild_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.runtime/CMakeFiles/Adamantite.runtime.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.runtime/CMakeFiles/edit_cache.dir
+D:/Adamantite/out/build/x64-debug/Adamantite.runtime/CMakeFiles/rebuild_cache.dir
