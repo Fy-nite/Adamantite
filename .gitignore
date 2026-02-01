@@ -5,7 +5,10 @@
 
 # dotenv files
 .env
-
+out
+build
+.env.local
+.env.*.local
 # User-specific files
 *.rsuser
 *.suo

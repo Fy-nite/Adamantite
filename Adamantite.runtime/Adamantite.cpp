@@ -2,6 +2,7 @@
 //
 
 #include "Adamantite.h"
+#include <SDL.h>
 #include "../Adamantite.core/Logging.hpp"
 
 using namespace std;
