@@ -3,6 +3,8 @@ using Adamantite.GPU;
 using Adamantite.GFX;
 using Microsoft.Xna.Framework.Input;
 using System.Text;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace Adamantite.GPU
 {
@@ -24,10 +26,10 @@ namespace Adamantite.GPU
 
             public static TextRenderOptions Default => new TextRenderOptions
             {
-                CharSpacing = 0,
-                LineSpacing = 0,
-                PaddingX = 0,
-                PaddingY = 0
+                CharSpacing = 1,
+                LineSpacing = 10,
+                PaddingX = 1,
+                PaddingY = 1
             };
         }
 
@@ -558,6 +560,23 @@ namespace Adamantite.GPU
                                 canvas.SetPixel(pxCol, pyRow, Canvas.ColorFromLong(fg));
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        public void Draw(SpriteBatch sb, SpriteFont font, int x, int y, float scale)
+        {
+            for (int row = 0; row < Rows; row++)
+            {
+                for (int col = 0; col < Columns; col++)
+                {
+                    char c = _chars[row, col];
+                    if (c != ' ')
+                    {
+                        Color fgColor = new Color(_fg[row, col]);
+                        Vector2 position = new Vector2(x + col * font.MeasureString(" ").X * scale, y + row * font.LineSpacing * scale);
+                        sb.DrawString(font, c.ToString(), position, fgColor, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
                     }
                 }
             }

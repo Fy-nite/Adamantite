@@ -96,11 +96,23 @@ namespace Adamantite.VFS
             fs.CreateDirectory(local);
         }
 
+        // Convenience: create an empty file
+        public void CreateFile(string path)
+        {
+            using var s = OpenWrite(path);
+        }
+
         public void Delete(string path)
         {
             var (fs, local) = Resolve(path);
             if (fs == null) throw new FileNotFoundException(path);
             fs.Delete(local);
+        }
+
+        // Alias for Delete
+        public void Remove(string path)
+        {
+            Delete(path);
         }
 
         public byte[] ReadAllBytes(string path)

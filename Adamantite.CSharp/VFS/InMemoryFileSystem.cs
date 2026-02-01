@@ -10,6 +10,7 @@ namespace Adamantite.VFS
     {
         readonly ConcurrentDictionary<string, byte[]> _files = new(StringComparer.OrdinalIgnoreCase);
         readonly ConcurrentDictionary<string, DateTime> _dirs = new(StringComparer.OrdinalIgnoreCase);
+        readonly ConcurrentDictionary<string, string> _symlinks = new(StringComparer.OrdinalIgnoreCase);
 
         public InMemoryFileSystem()
         {
@@ -26,6 +27,7 @@ namespace Adamantite.VFS
         public Stream OpenRead(string path)
         {
             path = Normalize(path);
+            path = ResolveSymlink(path);
             if (!_files.TryGetValue(path, out var data)) throw new FileNotFoundException(path);
             return new MemoryStream(data, false);
         }
@@ -45,7 +47,22 @@ namespace Adamantite.VFS
         public bool Exists(string path)
         {
             path = Normalize(path);
-            return _files.ContainsKey(path) || _dirs.ContainsKey(path);
+            return _files.ContainsKey(path) || _dirs.ContainsKey(path) || _symlinks.ContainsKey(path);
+        }
+
+        public void CreateSymlink(string linkPath, string targetPath)
+        {
+            linkPath = Normalize(linkPath);
+            _symlinks[linkPath] = targetPath;
+        }
+
+        private string ResolveSymlink(string path)
+        {
+            if (_symlinks.TryGetValue(path, out var target))
+            {
+                return Normalize(target);
+            }
+            return path;
         }
 
         public IEnumerable<VfsFileInfo> Enumerate(string path)
@@ -56,7 +73,9 @@ namespace Adamantite.VFS
                 .Select(k => new VfsFileInfo(k.Substring(prefix.Length), true, 0, _dirs[k]));
             var files = _files.Keys.Where(k => k.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                 .Select(k => new VfsFileInfo(k.Substring(prefix.Length), false, _files[k].LongLength, DateTime.UtcNow));
-            return dirs.Concat(files);
+            var symlinks = _symlinks.Keys.Where(k => k.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                .Select(k => new VfsFileInfo(k.Substring(prefix.Length), false, 0, DateTime.UtcNow));
+            return dirs.Concat(files).Concat(symlinks);
         }
 
         public VfsFileInfo? GetFileInfo(string path)
@@ -64,6 +83,7 @@ namespace Adamantite.VFS
             path = Normalize(path);
             if (_dirs.TryGetValue(path, out var d)) return new VfsFileInfo(path, true, 0, d);
             if (_files.TryGetValue(path, out var f)) return new VfsFileInfo(path, false, f.LongLength, DateTime.UtcNow);
+            if (_symlinks.TryGetValue(path, out _)) return new VfsFileInfo(path, false, 0, DateTime.UtcNow);
             return null;
         }
 
@@ -78,11 +98,13 @@ namespace Adamantite.VFS
             path = Normalize(path);
             _files.TryRemove(path, out _);
             _dirs.TryRemove(path, out _);
+            _symlinks.TryRemove(path, out _);
         }
 
         public byte[] ReadAllBytes(string path)
         {
             path = Normalize(path);
+            path = ResolveSymlink(path);
             if (!_files.TryGetValue(path, out var data)) throw new FileNotFoundException(path);
             return data;
         }
