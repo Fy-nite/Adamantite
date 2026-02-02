@@ -13,6 +13,7 @@ namespace Adamantite.GPU
         public Texture(Surface surface)
         {
             Surface = surface ?? throw new ArgumentNullException(nameof(surface));
+
         }
     }
 }

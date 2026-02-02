@@ -62,35 +62,11 @@ namespace ObjectIR.MonoGame.SFX
             double twoPiF = 2.0 * Math.PI * frequencyHz;
             var rng = Random.Shared;
 
-            // Precompute ADSR boundaries
-            double attackEnd = Math.Max(0.0, attackSeconds);
-            double decayEnd = attackEnd + Math.Max(0.0, decaySeconds);
-            double releaseStart = Math.Max(0.0, durationSeconds - Math.Max(0.0, releaseSeconds));
-
+            // ADSR disabled: use constant envelope (no attack/decay/sustain/release)
             for (int i = 0; i < frames; i++)
             {
                 double t = (double)i / sampleRate;
-                // Compute ADSR envelope value (0..1)
-                double env;
-                if (t <= attackEnd && attackEnd > 0)
-                {
-                    env = t / attackEnd; // linear attack 0->1
-                }
-                else if (t <= decayEnd && decayEnd > attackEnd)
-                {
-                    double dt = (t - attackEnd) / Math.Max(1e-9, (decayEnd - attackEnd));
-                    env = 1.0 + (sustainLevel - 1.0) * dt; // linear 1 -> sustain
-                }
-                else if (t < releaseStart)
-                {
-                    env = sustainLevel;
-                }
-                else
-                {
-                    // release phase linear from sustainLevel -> 0
-                    double rt = (t - releaseStart) / Math.Max(1e-9, durationSeconds - releaseStart);
-                    env = (1.0 - rt) * sustainLevel;
-                }
+                double env = 1.0; // full amplitude across the whole duration
 
                 float osc = waveform switch
                 {

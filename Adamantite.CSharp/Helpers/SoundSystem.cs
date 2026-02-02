@@ -4,6 +4,8 @@ using System.IO;
 using System.Text;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace ObjectIR.MonoGame.Helpers
 {
@@ -115,6 +117,26 @@ namespace ObjectIR.MonoGame.Helpers
         }
 
         /// <summary>
+        /// Play a provided SoundEffect for a specified duration (in seconds), then stop and dispose the instance.
+        /// </summary>
+        public SoundEffectInstance Play(SoundEffect effect, double durationSeconds, string busName = "Master", float volume = 1f, float pitch = 0f, float pan = 0f)
+        {
+            var instance = Play(effect, busName, volume, pitch, pan);
+            if (durationSeconds > 0)
+            {
+                // Fire and forget: schedule stop/dispose after duration
+                Task.Run(async () => {
+                    try {
+                        await Task.Delay((int)(durationSeconds * 1000));
+                        try { instance.Stop(); } catch { }
+                        try { instance.Dispose(); } catch { }
+                    } catch { /* ignore */ }
+                });
+            }
+            return instance;
+        }
+
+        /// <summary>
         /// Play a one-shot using SoundEffect.Play with bus volume applied.
         /// </summary>
         public void PlayOneShot(string assetName, string busName = "Master", float volume = 1f)
@@ -168,6 +190,18 @@ namespace ObjectIR.MonoGame.Helpers
                     {
                         Console.WriteLine("PostProcessor error: " + ex.Message);
                     }
+                }
+                try
+                {
+                    int channelCount = channels == AudioChannels.Mono ? 1 : 2;
+                    int bytesPerSample = 2; // 16-bit PCM
+                    int frames = pcm.Length / (bytesPerSample * channelCount);
+                    double seconds = frames / (double)sampleRate;
+                    Console.WriteLine($"[SoundSystem] PrecomputeFromPcm key={key} frames={frames} seconds={seconds:0.###} sampleRate={sampleRate} channels={channelCount}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[SoundSystem] PrecomputeFromPcm logging error: " + ex.Message);
                 }
                 return new SoundEffect(pcm, sampleRate, channels);
             });
