@@ -69,7 +69,7 @@ namespace Adamantite.GPU
         }
     }
 
-    // MonoGame-based helper that the AsmoV2 adapter can use to present via MonoGame.
+    // MonoGame-based helper that the VBlank adapter can use to present via MonoGame.
     public class MonoGameRenderBackend : VBlank.Abstractions.IRenderBackend
     {
         private Adamantite.GFX.Canvas _canvas = null!;
