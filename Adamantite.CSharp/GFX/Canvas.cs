@@ -78,7 +78,7 @@ namespace Adamantite.GFX
             return new Color(r, g, b, a);
         }
 
-        void MarkDirtyRect(int x, int y, int w, int h)
+        public void MarkDirtyRect(int x, int y, int w, int h)
         {
             if (w <= 0 || h <= 0) return;
             x = Math.Max(0, Math.Min(x, width));

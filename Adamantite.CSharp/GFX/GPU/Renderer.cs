@@ -90,7 +90,11 @@ namespace Adamantite.GPU
                 _canvas = c;
                 _spriteBatch = new SpriteBatch(_graphicsDevice);
                 _texture = new Texture2D(_graphicsDevice, Math.Max(1, _canvas.width), Math.Max(1, _canvas.height), false, SurfaceFormat.Color);
-                try { _texture.SetData(_canvas.PixelData); } catch { }
+                try
+                {
+                    _texture.SetData(_canvas.PixelData);
+                }
+                catch { }
             }
         }
 
@@ -101,14 +105,34 @@ namespace Adamantite.GPU
             {
                 _texture?.Dispose();
                 _texture = new Texture2D(_graphicsDevice, Math.Max(1, canvas.width), Math.Max(1, canvas.height), false, SurfaceFormat.Color);
-                _texture.SetData(canvas.PixelData);
+                try
+                {
+                    _texture.SetData(canvas.PixelData);
+                }
+                catch { }
             }
             catch { }
         }
 
         public void Present()
         {
-            // Present requires the engine to call Present with a destination size; noop here.
+            // Draw uploaded texture to the backbuffer using the backend's SpriteBatch.
+            if (_graphicsDevice == null) return;
+            try
+            {
+                if (_texture == null || _spriteBatch == null) return;
+                
+                var bw = _graphicsDevice.PresentationParameters.BackBufferWidth;
+                var bh = _graphicsDevice.PresentationParameters.BackBufferHeight;
+                
+                // Clear to black first
+                _graphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
+                
+                _spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.Opaque);
+                _spriteBatch.Draw(_texture, new Microsoft.Xna.Framework.Rectangle(0, 0, Math.Max(1, bw), Math.Max(1, bh)), Microsoft.Xna.Framework.Color.White);
+                _spriteBatch.End();
+            }
+            catch { }
         }
 
         public bool PumpEvents() => true;
