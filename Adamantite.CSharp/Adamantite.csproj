@@ -13,9 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Iridion-core\OCRuntime\OCRuntime.csproj" />
-
-    <ProjectReference Include="..\..\VBlank.Abstractions\VBlank.Abstractions.csproj" />
+    <!-- <ProjectReference Include="Iridion-core\OCRuntime\OCRuntime.csproj" />
+    <ProjectReference Include="VBlank.Abstractions\VBlank.Abstractions.csproj" /> -->
 	<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
 	<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
 	<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
