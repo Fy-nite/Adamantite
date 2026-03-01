@@ -12,6 +12,7 @@ namespace Adamantite.GFX.UI
         public Color HoverColor { get; set; }
         public Color PressColor { get; set; }
         public bool IsPressed { get; private set; }
+        public object? Sprite { get; set; }
 
         public Button(Rectangle bounds, string text) : base(bounds)
         {
