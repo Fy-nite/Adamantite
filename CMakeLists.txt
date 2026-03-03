@@ -20,6 +20,7 @@ add_subdirectory ("Adamantite.core")
 add_subdirectory ("Adamantite.sound")
 add_subdirectory ("Adamantite.html")
 add_subdirectory ("Adamantite.video")
+add_subdirectory ("Adamantite.Cpp")
 add_subdirectory ("Adamantite.runtime")
 target_link_libraries(Adamantite.runtime PRIVATE Adamantite.core Adamantite.sound Adamantite.html Adamantite.video)
 
@@ -40,4 +41,4 @@ add_custom_target(copy_shared_libs ALL
 )
 
 # Ensure the copy step runs after these library targets are built
-add_dependencies(copy_shared_libs Adamantite.core Adamantite.sound Adamantite.html Adamantite.video Adamantite.runtime)
+add_dependencies(copy_shared_libs Adamantite.core Adamantite.sound Adamantite.html Adamantite.video Adamantite.Cpp Adamantite.runtime)
