@@ -8,38 +8,38 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr GenerateSineWavePcm(float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr bytes(IntPtr _2);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr GenerateWavePcm(float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr bytes(IntPtr _2);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr MidiNoteToFrequency(int note);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr _sampleRate(IntPtr _44100);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void NoteOn(int midiNote, float velocity);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void NoteOff(int midiNote);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr RenderPcm(int frames);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr bytes(IntPtr _2);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Start(int midiNote, float velocity, int sampleRate);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void ReleaseNote();
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern float ProcessSample();
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void AdvanceEnvelope(double dt);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr if(IntPtr _);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr if(IntPtr _);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr if(IntPtr _);
 }

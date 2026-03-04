@@ -8,16 +8,16 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Core", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr SetLogLevel(IntPtr level);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Core", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr GetLogLevel();
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Core", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr ParseLogLevel(IntPtr str);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Core", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Info(IntPtr message);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Core", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Warning(IntPtr message);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Core", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Error(IntPtr message);
 }

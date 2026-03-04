@@ -56,6 +56,7 @@ namespace Adamantite.BindingGenerator
             var headerFiles = Directory.GetFiles(_inputDirectory, "*.h*", SearchOption.AllDirectories);
             var parser = new CppHeaderParser();
             var csGenerator = new CSharpBindingGenerator();
+            var libraryName = new DirectoryInfo(_inputDirectory).Name;
             foreach (var headerFile in headerFiles)
             {
                 Console.WriteLine($"Processing file: {headerFile}");
@@ -65,7 +66,7 @@ namespace Adamantite.BindingGenerator
                 var outputFileName = Path.GetFileNameWithoutExtension(headerFile) + ".cs";
                 var outputDir = Path.Combine(_outputDirectory, relativeDir);
                 var outputPath = Path.Combine(outputDir, outputFileName);
-                csGenerator.GenerateCSharpBindings(functions, outputPath, _headerContent);
+                csGenerator.GenerateCSharpBindings(functions, outputPath, _headerContent, libraryName);
                 Console.WriteLine($"Generated: {outputPath}");
             }
         }

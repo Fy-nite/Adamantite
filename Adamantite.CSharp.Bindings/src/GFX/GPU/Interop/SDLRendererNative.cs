@@ -8,20 +8,20 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_create();
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_destroy(IntPtr handle);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_init(IntPtr handle, int width, int height, IntPtr title);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_begin_frame(IntPtr handle);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_end_frame(IntPtr handle);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_clear(IntPtr handle, float r, float g, float b, float a);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_shutdown(IntPtr handle);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_present_pixels(IntPtr handle, IntPtr pixels, int width, int height);
 }

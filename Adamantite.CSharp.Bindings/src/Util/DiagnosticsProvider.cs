@@ -8,20 +8,20 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Info(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Warning(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Error(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Debug(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr LevelName(IntPtr level);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr LevelColor(IntPtr level);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr EnableVirtualTerminal();
 }

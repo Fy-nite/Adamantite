@@ -8,16 +8,16 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Clear(IntPtr c);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void SetPixel(int x, int y, IntPtr c);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void DrawFilledRect(int startX, int startY, int w, int h, IntPtr c);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr ColorFromLong(long value);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void MarkDirtyRect(int x, int y, int w, int h);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void ClearDirty();
 }

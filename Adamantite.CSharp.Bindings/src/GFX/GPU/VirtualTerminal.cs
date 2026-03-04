@@ -8,34 +8,34 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Default();
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Clear();
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Resize(int columns, int rows);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr nc(IntPtr columns, IntPtr _);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr nf(IntPtr columns, IntPtr arg1);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr nb(IntPtr columns, IntPtr arg1);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Write(IntPtr text);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr if(IntPtr _0);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr PutChar(IntPtr arg0);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void WriteLine(IntPtr text);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void PutChar(sbyte c);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void PutStringAt(IntPtr text, int x, int y, IntPtr fg, IntPtr bg);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void RenderToSurface(IntPtr surface);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void RenderToCanvas(IntPtr canvas);
-    [DllImport("NativeLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void ScrollUp(int lines);
 }

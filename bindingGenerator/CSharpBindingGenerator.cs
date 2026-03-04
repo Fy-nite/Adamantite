@@ -6,7 +6,7 @@ namespace Adamantite.BindingGenerator
 {
     public class CSharpBindingGenerator
     {
-        public void GenerateCSharpBindings(List<CppFunction> functions, string outputPath, string headerContent)
+        public void GenerateCSharpBindings(List<CppFunction> functions, string outputPath, string headerContent, string libraryName)
         {
             // Ensure output directory exists
             var outDir = Path.GetDirectoryName(outputPath);
@@ -27,7 +27,8 @@ namespace Adamantite.BindingGenerator
                 var csReturn = MapCppTypeToCSharp(func.ReturnType);
                 var csParams = MapParameters(func.Parameters);
                 var safeName = MakeSafeIdentifier(func.Name);
-                lines.Add($"    [DllImport(\"NativeLib.dll\", CallingConvention = CallingConvention.Cdecl)]");
+                var dllName = string.IsNullOrWhiteSpace(libraryName) ? "NativeLib" : libraryName;
+                lines.Add($"    [DllImport(\"{dllName}\", CallingConvention = CallingConvention.Cdecl)]");
                 lines.Add($"    public static extern {csReturn} {safeName}({csParams});");
             }
             lines.Add("}");

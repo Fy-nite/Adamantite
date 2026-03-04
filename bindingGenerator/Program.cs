@@ -12,12 +12,12 @@
         ";
 
         public static string[] Directories = [
-            "../Adamantite.Core/",
-            "../Adamantite.Cpp/",
+            "../Adamantite.core/",
+            "../Adamantite.cpp/",
             "../Adamantite.html/",
             "../Adamantite.video/",
             "../Adamantite.runtime/",
-            "../Adamantite.audio/"
+            "../Adamantite.sound/"
         ];
         public const string OutputDirectory = "../Adamantite.CSharp.Bindings/src/";
         public static void Main(string[] args)
