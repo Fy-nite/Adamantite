@@ -11,8 +11,16 @@ public static class NativeBindings
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct VfsFileInfo
+public struct Colors
 {
-    public IntPtr Path;
-    public IntPtr LastModified;
+    public IntPtr White;
+    public IntPtr Black;
+    public IntPtr Gray;
+    public IntPtr DarkGray;
+    public IntPtr Cyan;
+    public IntPtr Magenta;
+    public IntPtr Yellow;
+    public IntPtr Orange;
+    public IntPtr Green;
+    public IntPtr DarkGreen;
 }

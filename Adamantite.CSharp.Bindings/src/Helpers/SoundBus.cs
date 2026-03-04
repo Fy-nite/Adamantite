@@ -8,6 +8,15 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Name(IntPtr arg0);
+}
+
+public class SoundBus
+{
+    private IntPtr _native;
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr SoundBus_Create(IntPtr name);
+    public SoundBus() { _native = SoundBus_Create(); }
 }

@@ -61,12 +61,14 @@ namespace Adamantite.BindingGenerator
             {
                 Console.WriteLine($"Processing file: {headerFile}");
                 var functions = parser.ParseFunctions(headerFile);
+                var classes = parser.ParseClasses(headerFile);
+                Console.WriteLine($"  Parsed {functions.Count} functions and {classes.Count} classes/structs.");
                 var relativePath = Path.GetRelativePath(_inputDirectory, headerFile);
                 var relativeDir = Path.GetDirectoryName(relativePath) ?? string.Empty;
                 var outputFileName = Path.GetFileNameWithoutExtension(headerFile) + ".cs";
                 var outputDir = Path.Combine(_outputDirectory, relativeDir);
                 var outputPath = Path.Combine(outputDir, outputFileName);
-                csGenerator.GenerateCSharpBindings(functions, outputPath, _headerContent, libraryName);
+                csGenerator.GenerateCSharpBindings(functions, classes, outputPath, _headerContent, libraryName);
                 Console.WriteLine($"Generated: {outputPath}");
             }
         }

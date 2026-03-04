@@ -8,6 +8,18 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Register();
+}
+
+public class NativeConnectors
+{
+    private IntPtr _native;
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr NativeConnectors_Register(IntPtr instance);
+    public IntPtr Register()
+    {
+        return NativeConnectors_Register(_native);
+    }
 }

@@ -9,10 +9,3 @@ using System.Runtime.InteropServices;
 public static class NativeBindings
 {
 }
-
-[StructLayout(LayoutKind.Sequential)]
-public struct VfsFileInfo
-{
-    public IntPtr Path;
-    public IntPtr LastModified;
-}

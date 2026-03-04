@@ -8,6 +8,18 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr LoadFont(IntPtr vfs, IntPtr fontPath);
+}
+
+public class VfsFontLoader
+{
+    private IntPtr _native;
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr VfsFontLoader_LoadFont(IntPtr instance, IntPtr vfs, IntPtr fontPath);
+    public IntPtr LoadFont(IntPtr vfs, IntPtr fontPath)
+    {
+        return VfsFontLoader_LoadFont(_native, vfs, fontPath);
+    }
 }

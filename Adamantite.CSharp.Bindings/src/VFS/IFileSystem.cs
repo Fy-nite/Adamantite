@@ -9,3 +9,51 @@ using System.Runtime.InteropServices;
 public static class NativeBindings
 {
 }
+
+public class IFileSystem
+{
+    private IntPtr _native;
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IFileSystem_ReadAllBytes(IntPtr instance, IntPtr path);
+    public IntPtr ReadAllBytes(IntPtr path)
+    {
+        return IFileSystem_ReadAllBytes(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IFileSystem_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data);
+    public IntPtr WriteAllBytes(IntPtr path, IntPtr data)
+    {
+        return IFileSystem_WriteAllBytes(_native, path, data);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IFileSystem_Exists(IntPtr instance, IntPtr path);
+    public IntPtr Exists(IntPtr path)
+    {
+        return IFileSystem_Exists(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IFileSystem_Enumerate(IntPtr instance, IntPtr path);
+    public IntPtr Enumerate(IntPtr path)
+    {
+        return IFileSystem_Enumerate(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IFileSystem_GetFileInfo(IntPtr instance, IntPtr path);
+    public IntPtr GetFileInfo(IntPtr path)
+    {
+        return IFileSystem_GetFileInfo(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IFileSystem_CreateDirectory(IntPtr instance, IntPtr path);
+    public IntPtr CreateDirectory(IntPtr path)
+    {
+        return IFileSystem_CreateDirectory(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IFileSystem_Delete(IntPtr instance, IntPtr path);
+    public IntPtr Delete(IntPtr path)
+    {
+        return IFileSystem_Delete(_native, path);
+    }
+}

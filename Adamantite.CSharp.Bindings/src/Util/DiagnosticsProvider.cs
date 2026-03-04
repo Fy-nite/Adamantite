@@ -8,20 +8,98 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Info(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Warning(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Error(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Debug(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr LevelName(IntPtr level);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr LevelColor(IntPtr level);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr EnableVirtualTerminal();
+}
+
+public class DiagnosticsProvider
+{
+    private IntPtr _native;
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_Emit(IntPtr instance, IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
+    public IntPtr Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack)
+    {
+        return DiagnosticsProvider_Emit(_native, level, header, contents, callStack);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_if(IntPtr instance, IntPtr unnamed);
+    public IntPtr if(IntPtr unnamed)
+    {
+        return DiagnosticsProvider_if(_native, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_if(IntPtr instance, IntPtr _callStack__empty_);
+    public IntPtr if(IntPtr _callStack__empty_)
+    {
+        return DiagnosticsProvider_if(_native, _callStack__empty_);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_Stack(IntPtr instance, IntPtr first);
+    public IntPtr Stack(IntPtr first)
+    {
+        return DiagnosticsProvider_Stack(_native, first);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_Info(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
+    public IntPtr Info(IntPtr header, IntPtr contents, IntPtr callStack)
+    {
+        return DiagnosticsProvider_Info(_native, header, contents, callStack);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_Warning(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
+    public IntPtr Warning(IntPtr header, IntPtr contents, IntPtr callStack)
+    {
+        return DiagnosticsProvider_Warning(_native, header, contents, callStack);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_Error(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
+    public IntPtr Error(IntPtr header, IntPtr contents, IntPtr callStack)
+    {
+        return DiagnosticsProvider_Error(_native, header, contents, callStack);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_Debug(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
+    public IntPtr Debug(IntPtr header, IntPtr contents, IntPtr callStack)
+    {
+        return DiagnosticsProvider_Debug(_native, header, contents, callStack);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_LevelName(IntPtr instance, IntPtr level);
+    public IntPtr LevelName(IntPtr level)
+    {
+        return DiagnosticsProvider_LevelName(_native, level);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_LevelColor(IntPtr instance, IntPtr level);
+    public IntPtr LevelColor(IntPtr level)
+    {
+        return DiagnosticsProvider_LevelColor(_native, level);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_EnableVirtualTerminal(IntPtr instance);
+    public IntPtr EnableVirtualTerminal()
+    {
+        return DiagnosticsProvider_EnableVirtualTerminal(_native);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr DiagnosticsProvider_SetConsoleMode(IntPtr instance, IntPtr unnamed, IntPtr unnamed);
+    public IntPtr SetConsoleMode(IntPtr unnamed, IntPtr unnamed)
+    {
+        return DiagnosticsProvider_SetConsoleMode(_native, unnamed, unnamed);
+    }
 }

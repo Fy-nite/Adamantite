@@ -8,6 +8,42 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("Adamantite.Core", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr CreateSDLRenderer();
+}
+
+public class IRenderer
+{
+    private IntPtr _native;
+
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IRenderer_Init(IntPtr instance, int width, int height, IntPtr title);
+    public IntPtr Init(int width, int height, IntPtr title)
+    {
+        return IRenderer_Init(_native, width, height, title);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IRenderer_BeginFrame(IntPtr instance);
+    public IntPtr BeginFrame()
+    {
+        return IRenderer_BeginFrame(_native);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IRenderer_EndFrame(IntPtr instance);
+    public IntPtr EndFrame()
+    {
+        return IRenderer_EndFrame(_native);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IRenderer_Clear(IntPtr instance, float r, float g, float b, float a);
+    public IntPtr Clear(float r, float g, float b, float a)
+    {
+        return IRenderer_Clear(_native, r, g, b, a);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IRenderer_Shutdown(IntPtr instance);
+    public IntPtr Shutdown()
+    {
+        return IRenderer_Shutdown(_native);
+    }
 }

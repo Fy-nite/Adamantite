@@ -3,7 +3,7 @@
 #
 
 # Add source to this project's executable.
-add_library (Adamantite.video "Adamantite.cpp" "Adamantite.h")
+add_library (Adamantite.video "Video.cpp" "Video.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Adamantite.video PROPERTY CXX_STANDARD 20)

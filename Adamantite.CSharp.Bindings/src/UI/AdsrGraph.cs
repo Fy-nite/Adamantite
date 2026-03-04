@@ -8,18 +8,16 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Debug(IntPtr msg);
 }
 
-public class DebugUtil
+public class AdsrGraph
 {
     private IntPtr _native;
 
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DebugUtil_Debug(IntPtr instance, IntPtr msg);
-    public IntPtr Debug(IntPtr msg)
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr AdsrGraph_UIElement(IntPtr instance, IntPtr unnamed);
+    public IntPtr UIElement(IntPtr unnamed)
     {
-        return DebugUtil_Debug(_native, msg);
+        return AdsrGraph_UIElement(_native, unnamed);
     }
 }

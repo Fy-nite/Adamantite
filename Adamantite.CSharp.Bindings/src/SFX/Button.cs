@@ -8,8 +8,26 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr PlayClick(IntPtr soundSystem, IntPtr bus, float defaultPitch);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr synth(IntPtr arg0, IntPtr arg1);
+}
+
+public class Button
+{
+    private IntPtr _native;
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr Button_PlayClick(IntPtr instance, IntPtr soundSystem, IntPtr bus, float defaultPitch);
+    public IntPtr PlayClick(IntPtr soundSystem, IntPtr bus, float defaultPitch)
+    {
+        return Button_PlayClick(_native, soundSystem, bus, defaultPitch);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr Button_synth(IntPtr instance, IntPtr unnamed, IntPtr unnamed);
+    public IntPtr synth(IntPtr unnamed, IntPtr unnamed)
+    {
+        return Button_synth(_native, unnamed, unnamed);
+    }
 }

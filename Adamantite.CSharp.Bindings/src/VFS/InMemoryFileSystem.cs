@@ -8,24 +8,153 @@ using System.Runtime.InteropServices;
 
 public static class NativeBindings
 {
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr lock(IntPtr arg0);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr lock(IntPtr arg0);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr lock(IntPtr arg0);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr lock(IntPtr arg0);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr lock(IntPtr arg0);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr lock(IntPtr arg0);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr lock(IntPtr arg0);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr lock_1(IntPtr arg0);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr lock_2(IntPtr arg0);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr lock_3(IntPtr arg0);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr lock_4(IntPtr arg0);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr lock_5(IntPtr arg0);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr lock_6(IntPtr arg0);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr lock_7(IntPtr arg0);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void CreateSymlink(IntPtr linkPath, IntPtr targetPath);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Normalize(IntPtr path);
-    [DllImport("Adamantite.Cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Normalize(IntPtr arg0);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr Normalize_8(IntPtr arg0);
+}
+
+public class InMemoryFileSystem
+{
+    private IntPtr _native;
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_Create();
+    public InMemoryFileSystem() { _native = InMemoryFileSystem_Create(); }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_ReadAllBytes(IntPtr instance, IntPtr path);
+    public IntPtr ReadAllBytes(IntPtr path)
+    {
+        return InMemoryFileSystem_ReadAllBytes(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_lock(IntPtr instance, IntPtr unnamed);
+    public IntPtr lock(IntPtr unnamed)
+    {
+        return InMemoryFileSystem_lock(_native, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void InMemoryFileSystem_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data);
+    public void WriteAllBytes(IntPtr path, IntPtr data)
+    {
+        InMemoryFileSystem_WriteAllBytes(_native, path, data);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_lock(IntPtr instance, IntPtr unnamed);
+    public IntPtr lock(IntPtr unnamed)
+    {
+        return InMemoryFileSystem_lock(_native, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern bool InMemoryFileSystem_Exists(IntPtr instance, IntPtr path);
+    public bool Exists(IntPtr path)
+    {
+        return InMemoryFileSystem_Exists(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_lock(IntPtr instance, IntPtr unnamed);
+    public IntPtr lock(IntPtr unnamed)
+    {
+        return InMemoryFileSystem_lock(_native, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_Enumerate(IntPtr instance, IntPtr path);
+    public IntPtr Enumerate(IntPtr path)
+    {
+        return InMemoryFileSystem_Enumerate(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_lock(IntPtr instance, IntPtr unnamed);
+    public IntPtr lock(IntPtr unnamed)
+    {
+        return InMemoryFileSystem_lock(_native, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_if(IntPtr instance, IntPtr unnamed, IntPtr unnamed);
+    public IntPtr if(IntPtr unnamed, IntPtr unnamed)
+    {
+        return InMemoryFileSystem_if(_native, unnamed, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_for(IntPtr instance, IntPtr _files);
+    public IntPtr for(IntPtr _files)
+    {
+        return InMemoryFileSystem_for(_native, _files);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_GetFileInfo(IntPtr instance, IntPtr path);
+    public IntPtr GetFileInfo(IntPtr path)
+    {
+        return InMemoryFileSystem_GetFileInfo(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_lock(IntPtr instance, IntPtr unnamed);
+    public IntPtr lock(IntPtr unnamed)
+    {
+        return InMemoryFileSystem_lock(_native, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void InMemoryFileSystem_CreateDirectory(IntPtr instance, IntPtr path);
+    public void CreateDirectory(IntPtr path)
+    {
+        InMemoryFileSystem_CreateDirectory(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_lock(IntPtr instance, IntPtr unnamed);
+    public IntPtr lock(IntPtr unnamed)
+    {
+        return InMemoryFileSystem_lock(_native, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void InMemoryFileSystem_Delete(IntPtr instance, IntPtr path);
+    public void Delete(IntPtr path)
+    {
+        InMemoryFileSystem_Delete(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_lock(IntPtr instance, IntPtr unnamed);
+    public IntPtr lock(IntPtr unnamed)
+    {
+        return InMemoryFileSystem_lock(_native, unnamed);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void InMemoryFileSystem_CreateSymlink(IntPtr instance, IntPtr linkPath, IntPtr targetPath);
+    public void CreateSymlink(IntPtr linkPath, IntPtr targetPath)
+    {
+        InMemoryFileSystem_CreateSymlink(_native, linkPath, targetPath);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_Normalize(IntPtr instance, IntPtr path);
+    public IntPtr Normalize(IntPtr path)
+    {
+        return InMemoryFileSystem_Normalize(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_ResolveSymlink(IntPtr instance, IntPtr path);
+    public IntPtr ResolveSymlink(IntPtr path)
+    {
+        return InMemoryFileSystem_ResolveSymlink(_native, path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr InMemoryFileSystem_Normalize(IntPtr instance, IntPtr unnamed);
+    public IntPtr Normalize(IntPtr unnamed)
+    {
+        return InMemoryFileSystem_Normalize(_native, unnamed);
+    }
 }
