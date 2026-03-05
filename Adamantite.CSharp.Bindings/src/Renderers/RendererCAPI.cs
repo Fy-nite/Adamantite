@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.Renderers;
 
-public static class NativeBindings
+public static class NativeBindings_RendererCAPI
 {
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr renderer_create();

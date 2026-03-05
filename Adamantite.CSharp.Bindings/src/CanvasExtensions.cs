@@ -5,15 +5,16 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings;
 
-public static class NativeBindings
+public static class NativeBindings_CanvasExtensions
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr DrawRect(IntPtr c, int x, int y, int w, int h, IntPtr color);
+    public static extern void DrawRect(IntPtr c, int x, int y, int w, int h, IntPtr color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr DrawLine(IntPtr c, int x0, int y0, int x1, int y1, IntPtr color);
+    public static extern void DrawLine(IntPtr c, int x0, int y0, int x1, int y1, IntPtr color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr DrawOutlinedRect(IntPtr c, int x, int y, int w, int h, IntPtr color);
+    public static extern void DrawOutlinedRect(IntPtr c, int x, int y, int w, int h, IntPtr color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void DrawText(IntPtr c, int x, int y, IntPtr text, IntPtr color);
 }

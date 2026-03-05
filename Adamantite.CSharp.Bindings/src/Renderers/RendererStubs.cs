@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.Renderers;
 
-public static class NativeBindings
+public static class NativeBindings_RendererStubs
 {
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr CreateSDLRenderer();
@@ -17,33 +18,33 @@ public class IRenderer
     private IntPtr _native;
 
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderer_Init(IntPtr instance, int width, int height, IntPtr title);
-    public IntPtr Init(int width, int height, IntPtr title)
+    private static extern bool IRenderer_Init(IntPtr instance, int width, int height, IntPtr title);
+    public bool Init(int width, int height, IntPtr title)
     {
         return IRenderer_Init(_native, width, height, title);
     }
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderer_BeginFrame(IntPtr instance);
-    public IntPtr BeginFrame()
+    private static extern void IRenderer_BeginFrame(IntPtr instance);
+    public void BeginFrame()
     {
-        return IRenderer_BeginFrame(_native);
+        IRenderer_BeginFrame(_native);
     }
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderer_EndFrame(IntPtr instance);
-    public IntPtr EndFrame()
+    private static extern void IRenderer_EndFrame(IntPtr instance);
+    public void EndFrame()
     {
-        return IRenderer_EndFrame(_native);
+        IRenderer_EndFrame(_native);
     }
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderer_Clear(IntPtr instance, float r, float g, float b, float a);
-    public IntPtr Clear(float r, float g, float b, float a)
+    private static extern void IRenderer_Clear(IntPtr instance, float r, float g, float b, float a);
+    public void Clear(float r, float g, float b, float a)
     {
-        return IRenderer_Clear(_native, r, g, b, a);
+        IRenderer_Clear(_native, r, g, b, a);
     }
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderer_Shutdown(IntPtr instance);
-    public IntPtr Shutdown()
+    private static extern void IRenderer_Shutdown(IntPtr instance);
+    public void Shutdown()
     {
-        return IRenderer_Shutdown(_native);
+        IRenderer_Shutdown(_native);
     }
 }

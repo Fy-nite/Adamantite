@@ -5,15 +5,16 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.VFS;
 
-public static class NativeBindings
+public static class NativeBindings_VFSGlobal
 {
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Manager();
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr SetManager(IntPtr manager);
+    public static extern void SetManager(IntPtr manager);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Initialize();
+    public static extern void Initialize();
 }
 
 public class VFSGlobal
@@ -27,15 +28,15 @@ public class VFSGlobal
         return VFSGlobal_Manager(_native);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VFSGlobal_SetManager(IntPtr instance, IntPtr manager);
-    public IntPtr SetManager(IntPtr manager)
+    private static extern void VFSGlobal_SetManager(IntPtr instance, IntPtr manager);
+    public void SetManager(IntPtr manager)
     {
-        return VFSGlobal_SetManager(_native, manager);
+        VFSGlobal_SetManager(_native, manager);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VFSGlobal_Initialize(IntPtr instance);
-    public IntPtr Initialize()
+    private static extern void VFSGlobal_Initialize(IntPtr instance);
+    public void Initialize()
     {
-        return VFSGlobal_Initialize(_native);
+        VFSGlobal_Initialize(_native);
     }
 }

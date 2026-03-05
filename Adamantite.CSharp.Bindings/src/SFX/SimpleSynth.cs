@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.SFX;
 
-public static class NativeBindings
+public static class NativeBindings_SimpleSynth
 {
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr GenerateSineWavePcm(float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels);
@@ -17,7 +18,7 @@ public static class NativeBindings
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr bytes_1(IntPtr _2);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr MidiNoteToFrequency(int note);
+    public static extern double MidiNoteToFrequency(int note);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr _sampleRate(IntPtr _44100);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
@@ -36,12 +37,6 @@ public static class NativeBindings
     public static extern float ProcessSample();
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void AdvanceEnvelope(double dt);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr if_3(IntPtr _);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr if_4(IntPtr _);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr if_5(IntPtr _);
 }
 
 public class SimpleSynth
@@ -55,123 +50,15 @@ public class SimpleSynth
         return SimpleSynth_GenerateSineWavePcm(_native, frequencyHz, durationSeconds, sampleRate, amplitude, channels);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_bytes(IntPtr instance, IntPtr _2);
-    public IntPtr bytes(IntPtr _2)
-    {
-        return SimpleSynth_bytes(_native, _2);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr SimpleSynth_GenerateWavePcm(IntPtr instance, float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels);
     public IntPtr GenerateWavePcm(float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels)
     {
         return SimpleSynth_GenerateWavePcm(_native, frequencyHz, durationSeconds, waveform, sampleRate, amplitude, channels);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_bytes(IntPtr instance, IntPtr _2);
-    public IntPtr bytes(IntPtr _2)
-    {
-        return SimpleSynth_bytes(_native, _2);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_MidiNoteToFrequency(IntPtr instance, int note);
-    public IntPtr MidiNoteToFrequency(int note)
+    private static extern double SimpleSynth_MidiNoteToFrequency(IntPtr instance, int note);
+    public double MidiNoteToFrequency(int note)
     {
         return SimpleSynth_MidiNoteToFrequency(_native, note);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth__sampleRate(IntPtr instance, IntPtr _44100);
-    public IntPtr _sampleRate(IntPtr _44100)
-    {
-        return SimpleSynth__sampleRate(_native, _44100);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SimpleSynth_NoteOn(IntPtr instance, int midiNote, float velocity);
-    public void NoteOn(int midiNote, float velocity)
-    {
-        SimpleSynth_NoteOn(_native, midiNote, velocity);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return SimpleSynth_if(_native, unnamed);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return SimpleSynth_if(_native, unnamed);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SimpleSynth_NoteOff(IntPtr instance, int midiNote);
-    public void NoteOff(int midiNote)
-    {
-        SimpleSynth_NoteOff(_native, midiNote);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_RenderPcm(IntPtr instance, int frames);
-    public IntPtr RenderPcm(int frames)
-    {
-        return SimpleSynth_RenderPcm(_native, frames);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_bytes(IntPtr instance, IntPtr _2);
-    public IntPtr bytes(IntPtr _2)
-    {
-        return SimpleSynth_bytes(_native, _2);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return SimpleSynth_if(_native, unnamed);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern bool SimpleSynth_Active(IntPtr instance);
-    public bool Active()
-    {
-        return SimpleSynth_Active(_native);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SimpleSynth_Start(IntPtr instance, int midiNote, float velocity, int sampleRate);
-    public void Start(int midiNote, float velocity, int sampleRate)
-    {
-        SimpleSynth_Start(_native, midiNote, velocity, sampleRate);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SimpleSynth_ReleaseNote(IntPtr instance);
-    public void ReleaseNote()
-    {
-        SimpleSynth_ReleaseNote(_native);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern float SimpleSynth_ProcessSample(IntPtr instance);
-    public float ProcessSample()
-    {
-        return SimpleSynth_ProcessSample(_native);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SimpleSynth_AdvanceEnvelope(IntPtr instance, double dt);
-    public void AdvanceEnvelope(double dt)
-    {
-        SimpleSynth_AdvanceEnvelope(_native, dt);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_if(IntPtr instance, IntPtr _);
-    public IntPtr if(IntPtr _)
-    {
-        return SimpleSynth_if(_native, _);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_if(IntPtr instance, IntPtr _);
-    public IntPtr if(IntPtr _)
-    {
-        return SimpleSynth_if(_native, _);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_if(IntPtr instance, IntPtr _);
-    public IntPtr if(IntPtr _)
-    {
-        return SimpleSynth_if(_native, _);
     }
 }

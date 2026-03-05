@@ -5,25 +5,26 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_ColorUtil
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr FromRgba(IntPtr r, IntPtr g, IntPtr b, IntPtr a);
+    public static extern IntPtr FromRgba(byte r, byte g, byte b, byte a);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr A(IntPtr argb);
+    public static extern byte A(uint argb);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr R(IntPtr argb);
+    public static extern byte R(uint argb);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr G(IntPtr argb);
+    public static extern byte G(uint argb);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr B(IntPtr argb);
+    public static extern byte B(uint argb);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Blend(IntPtr src, IntPtr dst);
+    public static extern uint Blend(uint src, uint dst);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr FromRgba_1(IntPtr arg0, IntPtr arg1, IntPtr arg2, IntPtr arg3);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Multiply(IntPtr color, IntPtr tint);
+    public static extern uint Multiply(uint color, uint tint);
 }
 
 public class ColorUtil
@@ -31,57 +32,45 @@ public class ColorUtil
     private IntPtr _native;
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_FromRgba(IntPtr instance, IntPtr r, IntPtr g, IntPtr b, IntPtr a);
-    public IntPtr FromRgba(IntPtr r, IntPtr g, IntPtr b, IntPtr a)
+    private static extern IntPtr ColorUtil_FromRgba(IntPtr instance, byte r, byte g, byte b, byte a);
+    public IntPtr FromRgba(byte r, byte g, byte b, byte a)
     {
         return ColorUtil_FromRgba(_native, r, g, b, a);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_A(IntPtr instance, IntPtr argb);
-    public IntPtr A(IntPtr argb)
+    private static extern byte ColorUtil_A(IntPtr instance, uint argb);
+    public byte A(uint argb)
     {
         return ColorUtil_A(_native, argb);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_R(IntPtr instance, IntPtr argb);
-    public IntPtr R(IntPtr argb)
+    private static extern byte ColorUtil_R(IntPtr instance, uint argb);
+    public byte R(uint argb)
     {
         return ColorUtil_R(_native, argb);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_G(IntPtr instance, IntPtr argb);
-    public IntPtr G(IntPtr argb)
+    private static extern byte ColorUtil_G(IntPtr instance, uint argb);
+    public byte G(uint argb)
     {
         return ColorUtil_G(_native, argb);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_B(IntPtr instance, IntPtr argb);
-    public IntPtr B(IntPtr argb)
+    private static extern byte ColorUtil_B(IntPtr instance, uint argb);
+    public byte B(uint argb)
     {
         return ColorUtil_B(_native, argb);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_Blend(IntPtr instance, IntPtr src, IntPtr dst);
-    public IntPtr Blend(IntPtr src, IntPtr dst)
+    private static extern uint ColorUtil_Blend(IntPtr instance, uint src, uint dst);
+    public uint Blend(uint src, uint dst)
     {
         return ColorUtil_Blend(_native, src, dst);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_FromRgba(IntPtr instance, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed);
-    public IntPtr FromRgba(IntPtr unnamed, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed)
-    {
-        return ColorUtil_FromRgba(_native, unnamed, unnamed, unnamed, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_Multiply(IntPtr instance, IntPtr color, IntPtr tint);
-    public IntPtr Multiply(IntPtr color, IntPtr tint)
+    private static extern uint ColorUtil_Multiply(IntPtr instance, uint color, uint tint);
+    public uint Multiply(uint color, uint tint)
     {
         return ColorUtil_Multiply(_native, color, tint);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_FromRgba(IntPtr instance, IntPtr tr);
-    public IntPtr FromRgba(IntPtr tr)
-    {
-        return ColorUtil_FromRgba(_native, tr);
     }
 }

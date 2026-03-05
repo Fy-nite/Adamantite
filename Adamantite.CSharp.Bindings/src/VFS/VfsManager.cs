@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.VFS;
 
-public static class NativeBindings
+public static class NativeBindings_VfsManager
 {
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Mount(IntPtr mountPoint, IntPtr fs);
@@ -119,17 +120,5 @@ public class VfsManager
     public IntPtr Resolve(IntPtr path)
     {
         return VfsManager_Resolve(_native, path);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VfsManager_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return VfsManager_if(_native, unnamed);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VfsManager_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return VfsManager_if(_native, unnamed);
     }
 }

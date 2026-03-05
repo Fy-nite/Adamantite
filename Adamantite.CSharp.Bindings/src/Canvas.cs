@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings;
 
-public static class NativeBindings
+public static class NativeBindings_Canvas
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Clear(IntPtr c);
@@ -25,10 +26,11 @@ public static class NativeBindings
 [StructLayout(LayoutKind.Sequential)]
 public struct Color
 {
-    public IntPtr r;
-    public IntPtr g;
-    public IntPtr b;
-    public IntPtr a;
+    public byte r;
+    public byte g;
+    public byte b;
+    public byte a;
+    public IntPtr White;
     public IntPtr Black;
 }
 

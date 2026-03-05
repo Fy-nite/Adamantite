@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.UI;
 
-public static class NativeBindings
+public static class NativeBindings_Label
 {
 }
 
@@ -15,9 +16,9 @@ public class Label
     private IntPtr _native;
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Label_UIElement(IntPtr instance, IntPtr unnamed);
-    public IntPtr UIElement(IntPtr unnamed)
+    private static extern void Label_Draw(IntPtr instance, IntPtr canvas, IntPtr arg1);
+    public void Draw(IntPtr canvas, IntPtr arg1)
     {
-        return Label_UIElement(_native, unnamed);
+        Label_Draw(_native, canvas, arg1);
     }
 }

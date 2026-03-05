@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.UI;
 
-public static class NativeBindings
+public static class NativeBindings_UIManager
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Add(IntPtr e);
@@ -53,12 +54,6 @@ public class UIManager
         return UIManager_RenderDirty(_native, canvas);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr UIManager_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return UIManager_if(_native, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void UIManager_ProcessInputAt(IntPtr instance, int mx, int my, bool mouseReleased);
     public void ProcessInputAt(int mx, int my, bool mouseReleased)
     {
@@ -69,17 +64,5 @@ public class UIManager
     public IntPtr CoalesceDirty()
     {
         return UIManager_CoalesceDirty(_native);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr UIManager_list(IntPtr instance, IntPtr unnamed);
-    public IntPtr list(IntPtr unnamed)
-    {
-        return UIManager_list(_native, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr UIManager_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return UIManager_if(_native, unnamed);
     }
 }

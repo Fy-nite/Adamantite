@@ -5,27 +5,28 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_SDLAdapterRenderer
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Target();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr CmdBuffer();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Clear(IntPtr color);
+    public static extern void Clear(uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void FillRect(int x, int y, int w, int h, IntPtr color);
+    public static extern void FillRect(int x, int y, int w, int h, uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void DrawSurface(IntPtr src, int x, int y);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawQuad(IntPtr texture, int x, int y, int w, int h, IntPtr tint);
+    public static extern void DrawQuad(IntPtr texture, int x, int y, int w, int h, uint tint);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Submit();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawText(IntPtr text, int x, int y, IntPtr color);
+    public static extern void DrawText(IntPtr text, int x, int y, uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawChar(sbyte c, int x, int y, IntPtr color);
+    public static extern void DrawChar(sbyte c, int x, int y, uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Shutdown();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
@@ -36,9 +37,6 @@ public class SDLAdapterRenderer
 {
     private IntPtr _native;
 
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SDLAdapterRenderer_Create(IntPtr target, IntPtr windowTitle);
-    public SDLAdapterRenderer() { _native = SDLAdapterRenderer_Create(); }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr SDLAdapterRenderer_Target(IntPtr instance);
     public IntPtr Target()
@@ -58,16 +56,22 @@ public class SDLAdapterRenderer
         return SDLAdapterRenderer_CmdBuffer(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SDLAdapterRenderer_renderer_destroy(IntPtr instance, IntPtr unnamed);
-    public IntPtr renderer_destroy(IntPtr unnamed)
+    private static extern void SDLAdapterRenderer_Initialize(IntPtr instance, IntPtr arg0, IntPtr arg1);
+    public void Initialize(IntPtr arg0, IntPtr arg1)
     {
-        return SDLAdapterRenderer_renderer_destroy(_native, unnamed);
+        SDLAdapterRenderer_Initialize(_native, arg0, arg1);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SDLAdapterRenderer_Initialize(IntPtr instance, IntPtr unnamed, IntPtr unnamed);
-    public void Initialize(IntPtr unnamed, IntPtr unnamed)
+    private static extern void SDLAdapterRenderer_Upload(IntPtr instance, IntPtr arg0, IntPtr arg1);
+    public void Upload(IntPtr arg0, IntPtr arg1)
     {
-        SDLAdapterRenderer_Initialize(_native, unnamed, unnamed);
+        SDLAdapterRenderer_Upload(_native, arg0, arg1);
+    }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void SDLAdapterRenderer_Present(IntPtr instance);
+    public void Present()
+    {
+        SDLAdapterRenderer_Present(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern bool SDLAdapterRenderer_PumpEvents(IntPtr instance);
@@ -76,14 +80,14 @@ public class SDLAdapterRenderer
         return SDLAdapterRenderer_PumpEvents(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SDLAdapterRenderer_Clear(IntPtr instance, IntPtr color);
-    public void Clear(IntPtr color)
+    private static extern void SDLAdapterRenderer_Clear(IntPtr instance, uint color);
+    public void Clear(uint color)
     {
         SDLAdapterRenderer_Clear(_native, color);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SDLAdapterRenderer_FillRect(IntPtr instance, int x, int y, int w, int h, IntPtr color);
-    public void FillRect(int x, int y, int w, int h, IntPtr color)
+    private static extern void SDLAdapterRenderer_FillRect(IntPtr instance, int x, int y, int w, int h, uint color);
+    public void FillRect(int x, int y, int w, int h, uint color)
     {
         SDLAdapterRenderer_FillRect(_native, x, y, w, h, color);
     }
@@ -94,8 +98,8 @@ public class SDLAdapterRenderer
         SDLAdapterRenderer_DrawSurface(_native, src, x, y);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SDLAdapterRenderer_DrawQuad(IntPtr instance, IntPtr texture, int x, int y, int w, int h, IntPtr tint);
-    public void DrawQuad(IntPtr texture, int x, int y, int w, int h, IntPtr tint)
+    private static extern void SDLAdapterRenderer_DrawQuad(IntPtr instance, IntPtr texture, int x, int y, int w, int h, uint tint);
+    public void DrawQuad(IntPtr texture, int x, int y, int w, int h, uint tint)
     {
         SDLAdapterRenderer_DrawQuad(_native, texture, x, y, w, h, tint);
     }
@@ -106,34 +110,16 @@ public class SDLAdapterRenderer
         SDLAdapterRenderer_Submit(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SDLAdapterRenderer_renderer_begin_frame(IntPtr instance, IntPtr unnamed);
-    public IntPtr renderer_begin_frame(IntPtr unnamed)
-    {
-        return SDLAdapterRenderer_renderer_begin_frame(_native, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SDLAdapterRenderer_DrawText(IntPtr instance, IntPtr text, int x, int y, IntPtr color);
-    public void DrawText(IntPtr text, int x, int y, IntPtr color)
+    private static extern void SDLAdapterRenderer_DrawText(IntPtr instance, IntPtr text, int x, int y, uint color);
+    public void DrawText(IntPtr text, int x, int y, uint color)
     {
         SDLAdapterRenderer_DrawText(_native, text, x, y, color);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SDLAdapterRenderer_DrawChar(IntPtr instance, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed);
-    public IntPtr DrawChar(IntPtr unnamed, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed)
-    {
-        return SDLAdapterRenderer_DrawChar(_native, unnamed, unnamed, unnamed, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void SDLAdapterRenderer_DrawChar(IntPtr instance, sbyte c, int x, int y, IntPtr color);
-    public void DrawChar(sbyte c, int x, int y, IntPtr color)
+    private static extern void SDLAdapterRenderer_DrawChar(IntPtr instance, sbyte c, int x, int y, uint color);
+    public void DrawChar(sbyte c, int x, int y, uint color)
     {
         SDLAdapterRenderer_DrawChar(_native, c, x, y, color);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SDLAdapterRenderer_if(IntPtr instance, IntPtr col);
-    public IntPtr if(IntPtr col)
-    {
-        return SDLAdapterRenderer_if(_native, col);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SDLAdapterRenderer_Shutdown(IntPtr instance);
@@ -146,11 +132,5 @@ public class SDLAdapterRenderer
     public void Dispose()
     {
         SDLAdapterRenderer_Dispose(_native);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SDLAdapterRenderer_renderer_destroy(IntPtr instance, IntPtr unnamed);
-    public IntPtr renderer_destroy(IntPtr unnamed)
-    {
-        return SDLAdapterRenderer_renderer_destroy(_native, unnamed);
     }
 }

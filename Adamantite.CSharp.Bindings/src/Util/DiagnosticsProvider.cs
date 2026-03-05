@@ -5,25 +5,26 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.Util;
 
-public static class NativeBindings
+public static class NativeBindings_DiagnosticsProvider
 {
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
+    public static extern void Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Info(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static extern void Info(IntPtr header, IntPtr contents, IntPtr callStack);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Warning(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static extern void Warning(IntPtr header, IntPtr contents, IntPtr callStack);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Error(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static extern void Error(IntPtr header, IntPtr contents, IntPtr callStack);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Debug(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static extern void Debug(IntPtr header, IntPtr contents, IntPtr callStack);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr LevelName(IntPtr level);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr LevelColor(IntPtr level);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr EnableVirtualTerminal();
+    public static extern bool EnableVirtualTerminal();
 }
 
 public class DiagnosticsProvider
@@ -31,52 +32,34 @@ public class DiagnosticsProvider
     private IntPtr _native;
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_Emit(IntPtr instance, IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
-    public IntPtr Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack)
+    private static extern void DiagnosticsProvider_Emit(IntPtr instance, IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
+    public void Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack)
     {
-        return DiagnosticsProvider_Emit(_native, level, header, contents, callStack);
+        DiagnosticsProvider_Emit(_native, level, header, contents, callStack);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
+    private static extern void DiagnosticsProvider_Info(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
+    public void Info(IntPtr header, IntPtr contents, IntPtr callStack)
     {
-        return DiagnosticsProvider_if(_native, unnamed);
+        DiagnosticsProvider_Info(_native, header, contents, callStack);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_if(IntPtr instance, IntPtr _callStack__empty_);
-    public IntPtr if(IntPtr _callStack__empty_)
+    private static extern void DiagnosticsProvider_Warning(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
+    public void Warning(IntPtr header, IntPtr contents, IntPtr callStack)
     {
-        return DiagnosticsProvider_if(_native, _callStack__empty_);
+        DiagnosticsProvider_Warning(_native, header, contents, callStack);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_Stack(IntPtr instance, IntPtr first);
-    public IntPtr Stack(IntPtr first)
+    private static extern void DiagnosticsProvider_Error(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
+    public void Error(IntPtr header, IntPtr contents, IntPtr callStack)
     {
-        return DiagnosticsProvider_Stack(_native, first);
+        DiagnosticsProvider_Error(_native, header, contents, callStack);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_Info(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
-    public IntPtr Info(IntPtr header, IntPtr contents, IntPtr callStack)
+    private static extern void DiagnosticsProvider_Debug(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
+    public void Debug(IntPtr header, IntPtr contents, IntPtr callStack)
     {
-        return DiagnosticsProvider_Info(_native, header, contents, callStack);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_Warning(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
-    public IntPtr Warning(IntPtr header, IntPtr contents, IntPtr callStack)
-    {
-        return DiagnosticsProvider_Warning(_native, header, contents, callStack);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_Error(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
-    public IntPtr Error(IntPtr header, IntPtr contents, IntPtr callStack)
-    {
-        return DiagnosticsProvider_Error(_native, header, contents, callStack);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_Debug(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
-    public IntPtr Debug(IntPtr header, IntPtr contents, IntPtr callStack)
-    {
-        return DiagnosticsProvider_Debug(_native, header, contents, callStack);
+        DiagnosticsProvider_Debug(_native, header, contents, callStack);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr DiagnosticsProvider_LevelName(IntPtr instance, IntPtr level);
@@ -91,15 +74,9 @@ public class DiagnosticsProvider
         return DiagnosticsProvider_LevelColor(_native, level);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_EnableVirtualTerminal(IntPtr instance);
-    public IntPtr EnableVirtualTerminal()
+    private static extern bool DiagnosticsProvider_EnableVirtualTerminal(IntPtr instance);
+    public bool EnableVirtualTerminal()
     {
         return DiagnosticsProvider_EnableVirtualTerminal(_native);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_SetConsoleMode(IntPtr instance, IntPtr unnamed, IntPtr unnamed);
-    public IntPtr SetConsoleMode(IntPtr unnamed, IntPtr unnamed)
-    {
-        return DiagnosticsProvider_SetConsoleMode(_native, unnamed, unnamed);
     }
 }

@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.VFS;
 
-public static class NativeBindings
+public static class NativeBindings_PhysicalFileSystem
 {
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr PhysicalFileSystem(IntPtr rootPath);
@@ -22,7 +23,7 @@ public class PhysicalFileSystem
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr PhysicalFileSystem_Create(IntPtr rootPath);
-    public PhysicalFileSystem() { _native = PhysicalFileSystem_Create(); }
+    public PhysicalFileSystem(IntPtr rootPath) { _native = PhysicalFileSystem_Create(rootPath); }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr PhysicalFileSystem_ReadAllBytes(IntPtr instance, IntPtr path);
     public IntPtr ReadAllBytes(IntPtr path)
@@ -30,22 +31,10 @@ public class PhysicalFileSystem
         return PhysicalFileSystem_ReadAllBytes(_native, path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr PhysicalFileSystem_f(IntPtr instance, IntPtr unnamed, IntPtr unnamed);
-    public IntPtr f(IntPtr unnamed, IntPtr unnamed)
-    {
-        return PhysicalFileSystem_f(_native, unnamed, unnamed);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void PhysicalFileSystem_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data);
     public void WriteAllBytes(IntPtr path, IntPtr data)
     {
         PhysicalFileSystem_WriteAllBytes(_native, path, data);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr PhysicalFileSystem_f(IntPtr instance, IntPtr unnamed, IntPtr std__ios__trunc);
-    public IntPtr f(IntPtr unnamed, IntPtr std__ios__trunc)
-    {
-        return PhysicalFileSystem_f(_native, unnamed, std__ios__trunc);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern bool PhysicalFileSystem_Exists(IntPtr instance, IntPtr path);
@@ -64,12 +53,6 @@ public class PhysicalFileSystem
     public IntPtr GetFileInfo(IntPtr path)
     {
         return PhysicalFileSystem_GetFileInfo(_native, path);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr PhysicalFileSystem_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return PhysicalFileSystem_if(_native, unnamed);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void PhysicalFileSystem_CreateDirectory(IntPtr instance, IntPtr path);

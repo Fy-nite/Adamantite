@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.UI;
 
-public static class NativeBindings
+public static class NativeBindings_UIElement
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Intersect(IntPtr a, IntPtr b);
@@ -25,52 +26,25 @@ public struct Rect
     public int Y;
     public int Width;
     public int Height;
-    public int y;
-    public int b_Y_;
-    public int r;
-    public int b_Right___;
-    public int bot;
-    public int b_Bottom___;
-    public IntPtr _;
-    public IntPtr y;
-    public IntPtr _0;
-    public IntPtr _0_;
-    public IntPtr _x;
-    public IntPtr y;
-    public IntPtr x;
-    public IntPtr y_;
-    public int y;
-    public int b_Y_;
-    public int r;
-    public int b_Right___;
-    public int bot;
-    public int b_Bottom___;
-    public IntPtr _x;
-    public IntPtr y;
-    public IntPtr x;
-    public IntPtr y_;
 }
 
-public class UIManager
+public class UIElement
 {
     private IntPtr _native;
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr UIManager_UIElement(IntPtr instance, IntPtr bounds);
-    public IntPtr UIElement(IntPtr bounds)
+    private static extern IntPtr UIElement_Create(IntPtr bounds);
+    public UIElement(IntPtr bounds) { _native = UIElement_Create(bounds); }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void UIElement_Draw(IntPtr instance, IntPtr canvas, IntPtr clip);
+    public void Draw(IntPtr canvas, IntPtr clip)
     {
-        return UIManager_UIElement(_native, bounds);
+        UIElement_Draw(_native, canvas, clip);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr UIManager_Draw(IntPtr instance, IntPtr canvas, IntPtr clip);
-    public IntPtr Draw(IntPtr canvas, IntPtr clip)
-    {
-        return UIManager_Draw(_native, canvas, clip);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void UIManager_Invalidate(IntPtr instance, IntPtr area);
+    private static extern void UIElement_Invalidate(IntPtr instance, IntPtr area);
     public void Invalidate(IntPtr area)
     {
-        UIManager_Invalidate(_native, area);
+        UIElement_Invalidate(_native, area);
     }
 }

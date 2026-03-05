@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.Helpers;
 
-public static class NativeBindings
+public static class NativeBindings_SoundBus
 {
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Name(IntPtr arg0);
@@ -18,5 +19,5 @@ public class SoundBus
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr SoundBus_Create(IntPtr name);
-    public SoundBus() { _native = SoundBus_Create(); }
+    public SoundBus(IntPtr name) { _native = SoundBus_Create(name); }
 }

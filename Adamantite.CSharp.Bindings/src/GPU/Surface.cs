@@ -5,30 +5,28 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_Surface
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Pixels();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Clear(IntPtr color);
+    public static extern void Clear(uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void SetPixel(int x, int y, IntPtr color);
+    public static extern void SetPixel(int x, int y, uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void FillRect(int x, int y, int w, int h, IntPtr color);
+    public static extern void FillRect(int x, int y, int w, int h, uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Blit(IntPtr src, int dstX, int dstY);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawTexturedQuad(IntPtr texture, int dstX, int dstY, int dstW, int dstH, IntPtr tint);
+    public static extern void DrawTexturedQuad(IntPtr texture, int dstX, int dstY, int dstW, int dstH, uint tint);
 }
 
 public class Surface
 {
     private IntPtr _native;
 
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Surface_Create(int width, int height);
-    public Surface() { _native = Surface_Create(); }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr Surface_Width(IntPtr instance);
     public IntPtr Width()
@@ -48,32 +46,26 @@ public class Surface
         return Surface_Pixels(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Surface_Pixels(IntPtr instance);
-    public IntPtr Pixels()
-    {
-        return Surface_Pixels(_native);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Surface_Clear(IntPtr instance, IntPtr color);
-    public void Clear(IntPtr color)
+    private static extern void Surface_Clear(IntPtr instance, uint color);
+    public void Clear(uint color)
     {
         Surface_Clear(_native, color);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Surface_SetPixel(IntPtr instance, int x, int y, IntPtr color);
-    public void SetPixel(int x, int y, IntPtr color)
+    private static extern void Surface_SetPixel(IntPtr instance, int x, int y, uint color);
+    public void SetPixel(int x, int y, uint color)
     {
         Surface_SetPixel(_native, x, y, color);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Surface_GetPixel(IntPtr instance, int x, int y);
-    public IntPtr GetPixel(int x, int y)
+    private static extern uint Surface_GetPixel(IntPtr instance, int x, int y);
+    public uint GetPixel(int x, int y)
     {
         return Surface_GetPixel(_native, x, y);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Surface_FillRect(IntPtr instance, int x, int y, int w, int h, IntPtr color);
-    public void FillRect(int x, int y, int w, int h, IntPtr color)
+    private static extern void Surface_FillRect(IntPtr instance, int x, int y, int w, int h, uint color);
+    public void FillRect(int x, int y, int w, int h, uint color)
     {
         Surface_FillRect(_native, x, y, w, h, color);
     }
@@ -84,8 +76,8 @@ public class Surface
         Surface_Blit(_native, src, dstX, dstY);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Surface_DrawTexturedQuad(IntPtr instance, IntPtr texture, int dstX, int dstY, int dstW, int dstH, IntPtr tint);
-    public void DrawTexturedQuad(IntPtr texture, int dstX, int dstY, int dstW, int dstH, IntPtr tint)
+    private static extern void Surface_DrawTexturedQuad(IntPtr instance, IntPtr texture, int dstX, int dstY, int dstW, int dstH, uint tint);
+    public void DrawTexturedQuad(IntPtr texture, int dstX, int dstY, int dstW, int dstH, uint tint)
     {
         Surface_DrawTexturedQuad(_native, texture, dstX, dstY, dstW, dstH, tint);
     }

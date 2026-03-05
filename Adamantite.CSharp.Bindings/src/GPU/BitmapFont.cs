@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_BitmapFont
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Init();
@@ -16,9 +17,6 @@ public class BitmapFont
 {
     private IntPtr _native;
 
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr BitmapFont_Create();
-    public BitmapFont() { _native = BitmapFont_Create(); }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr BitmapFont_CharWidth(IntPtr instance);
     public IntPtr CharWidth()

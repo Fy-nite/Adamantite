@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings;
 
-public static class NativeBindings
+public static class NativeBindings_IConsoleGame
 {
 }
 
@@ -15,21 +16,21 @@ public class IConsoleGame
     private IntPtr _native;
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IConsoleGame_Init(IntPtr instance, IntPtr surface);
-    public IntPtr Init(IntPtr surface)
+    private static extern void IConsoleGame_Init(IntPtr instance, IntPtr surface);
+    public void Init(IntPtr surface)
     {
-        return IConsoleGame_Init(_native, surface);
+        IConsoleGame_Init(_native, surface);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IConsoleGame_Update(IntPtr instance, double deltaTime);
-    public IntPtr Update(double deltaTime)
+    private static extern void IConsoleGame_Update(IntPtr instance, double deltaTime);
+    public void Update(double deltaTime)
     {
-        return IConsoleGame_Update(_native, deltaTime);
+        IConsoleGame_Update(_native, deltaTime);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IConsoleGame_Draw(IntPtr instance, IntPtr surface);
-    public IntPtr Draw(IntPtr surface)
+    private static extern void IConsoleGame_Draw(IntPtr instance, IntPtr surface);
+    public void Draw(IntPtr surface)
     {
-        return IConsoleGame_Draw(_native, surface);
+        IConsoleGame_Draw(_native, surface);
     }
 }

@@ -5,11 +5,12 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings;
 
-public static class NativeBindings
+public static class NativeBindings_Logging
 {
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr SetLogLevel(IntPtr level);
+    public static extern void SetLogLevel(IntPtr level);
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr GetLogLevel();
     [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]

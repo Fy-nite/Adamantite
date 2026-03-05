@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_Texture
 {
 }
 
@@ -16,7 +17,7 @@ public class Texture
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr Texture_Create(IntPtr surface);
-    public Texture() { _native = Texture_Create(); }
+    public Texture(IntPtr surface) { _native = Texture_Create(surface); }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr Texture_SurfacePtr(IntPtr instance);
     public IntPtr SurfacePtr()

@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.VFS;
 
-public static class NativeBindings
+public static class NativeBindings_IFileSystem
 {
 }
 
@@ -21,14 +22,14 @@ public class IFileSystem
         return IFileSystem_ReadAllBytes(_native, path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IFileSystem_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data);
-    public IntPtr WriteAllBytes(IntPtr path, IntPtr data)
+    private static extern void IFileSystem_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data);
+    public void WriteAllBytes(IntPtr path, IntPtr data)
     {
-        return IFileSystem_WriteAllBytes(_native, path, data);
+        IFileSystem_WriteAllBytes(_native, path, data);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IFileSystem_Exists(IntPtr instance, IntPtr path);
-    public IntPtr Exists(IntPtr path)
+    private static extern bool IFileSystem_Exists(IntPtr instance, IntPtr path);
+    public bool Exists(IntPtr path)
     {
         return IFileSystem_Exists(_native, path);
     }
@@ -45,15 +46,15 @@ public class IFileSystem
         return IFileSystem_GetFileInfo(_native, path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IFileSystem_CreateDirectory(IntPtr instance, IntPtr path);
-    public IntPtr CreateDirectory(IntPtr path)
+    private static extern void IFileSystem_CreateDirectory(IntPtr instance, IntPtr path);
+    public void CreateDirectory(IntPtr path)
     {
-        return IFileSystem_CreateDirectory(_native, path);
+        IFileSystem_CreateDirectory(_native, path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IFileSystem_Delete(IntPtr instance, IntPtr path);
-    public IntPtr Delete(IntPtr path)
+    private static extern void IFileSystem_Delete(IntPtr instance, IntPtr path);
+    public void Delete(IntPtr path)
     {
-        return IFileSystem_Delete(_native, path);
+        IFileSystem_Delete(_native, path);
     }
 }

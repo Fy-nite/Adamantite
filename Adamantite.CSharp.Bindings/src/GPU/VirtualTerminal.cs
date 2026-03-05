@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_VirtualTerminal
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Default();
@@ -23,15 +24,13 @@ public static class NativeBindings
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Write(IntPtr text);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr if_1(IntPtr _0);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr PutChar(IntPtr arg0);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void WriteLine(IntPtr text);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void PutChar_2(sbyte c);
+    public static extern void PutChar_1(sbyte c);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void PutStringAt(IntPtr text, int x, int y, IntPtr fg, IntPtr bg);
+    public static extern void PutStringAt(IntPtr text, int x, int y, uint fg, uint bg);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void RenderToSurface(IntPtr surface);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
@@ -44,12 +43,6 @@ public class VirtualTerminal
 {
     private IntPtr _native;
 
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_Default(IntPtr instance);
-    public IntPtr Default()
-    {
-        return VirtualTerminal_Default(_native);
-    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern int VirtualTerminal_Columns(IntPtr instance);
     public int Columns()
@@ -75,12 +68,6 @@ public class VirtualTerminal
         return VirtualTerminal_CursorY(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal__columns(IntPtr instance, IntPtr unnamed);
-    public IntPtr _columns(IntPtr unnamed)
-    {
-        return VirtualTerminal__columns(_native, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_Clear(IntPtr instance);
     public void Clear()
     {
@@ -93,58 +80,10 @@ public class VirtualTerminal
         VirtualTerminal_Resize(_native, columns, rows);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_nc(IntPtr instance, IntPtr columns, IntPtr _);
-    public IntPtr nc(IntPtr columns, IntPtr _)
-    {
-        return VirtualTerminal_nc(_native, columns, _);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_nf(IntPtr instance, IntPtr columns, IntPtr unnamed);
-    public IntPtr nf(IntPtr columns, IntPtr unnamed)
-    {
-        return VirtualTerminal_nf(_native, columns, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_nb(IntPtr instance, IntPtr columns, IntPtr unnamed);
-    public IntPtr nb(IntPtr columns, IntPtr unnamed)
-    {
-        return VirtualTerminal_nb(_native, columns, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_if(IntPtr instance, IntPtr _columns);
-    public IntPtr if(IntPtr _columns)
-    {
-        return VirtualTerminal_if(_native, _columns);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_Write(IntPtr instance, IntPtr text);
     public void Write(IntPtr text)
     {
         VirtualTerminal_Write(_native, text);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_switch(IntPtr instance, IntPtr unnamed);
-    public IntPtr switch(IntPtr unnamed)
-    {
-        return VirtualTerminal_switch(_native, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_if(IntPtr instance, IntPtr _0);
-    public IntPtr if(IntPtr _0)
-    {
-        return VirtualTerminal_if(_native, _0);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_PutChar(IntPtr instance, IntPtr unnamed);
-    public IntPtr PutChar(IntPtr unnamed)
-    {
-        return VirtualTerminal_PutChar(_native, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_if(IntPtr instance, IntPtr _);
-    public IntPtr if(IntPtr _)
-    {
-        return VirtualTerminal_if(_native, _);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_WriteLine(IntPtr instance, IntPtr text);
@@ -159,22 +98,10 @@ public class VirtualTerminal
         VirtualTerminal_PutChar(_native, c);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_if(IntPtr instance, IntPtr _0);
-    public IntPtr if(IntPtr _0)
-    {
-        return VirtualTerminal_if(_native, _0);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void VirtualTerminal_PutStringAt(IntPtr instance, IntPtr text, int x, int y, IntPtr fg, IntPtr bg);
-    public void PutStringAt(IntPtr text, int x, int y, IntPtr fg, IntPtr bg)
+    private static extern void VirtualTerminal_PutStringAt(IntPtr instance, IntPtr text, int x, int y, uint fg, uint bg);
+    public void PutStringAt(IntPtr text, int x, int y, uint fg, uint bg)
     {
         VirtualTerminal_PutStringAt(_native, text, x, y, fg, bg);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_if(IntPtr instance, IntPtr _);
-    public IntPtr if(IntPtr _)
-    {
-        return VirtualTerminal_if(_native, _);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr VirtualTerminal_GetCurrentLine(IntPtr instance);
@@ -183,34 +110,16 @@ public class VirtualTerminal
         return VirtualTerminal_GetCurrentLine(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_while(IntPtr instance, IntPtr unnamed);
-    public IntPtr while(IntPtr unnamed)
-    {
-        return VirtualTerminal_while(_native, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_RenderToSurface(IntPtr instance, IntPtr surface);
     public void RenderToSurface(IntPtr surface)
     {
         VirtualTerminal_RenderToSurface(_native, surface);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_if(IntPtr instance, IntPtr gx);
-    public IntPtr if(IntPtr gx)
-    {
-        return VirtualTerminal_if(_native, gx);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_RenderToCanvas(IntPtr instance, IntPtr canvas);
     public void RenderToCanvas(IntPtr canvas)
     {
         VirtualTerminal_RenderToCanvas(_native, canvas);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VirtualTerminal_if(IntPtr instance, IntPtr gx);
-    public IntPtr if(IntPtr gx)
-    {
-        return VirtualTerminal_if(_native, gx);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_ScrollUp(IntPtr instance, int lines);

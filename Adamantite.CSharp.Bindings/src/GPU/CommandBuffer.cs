@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_CommandBuffer
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Clear();
@@ -28,7 +29,7 @@ public struct DrawQuadCall
     public int y;
     public int width;
     public int height;
-    public IntPtr tint;
+    public uint tint;
 }
 
 public class CommandBuffer

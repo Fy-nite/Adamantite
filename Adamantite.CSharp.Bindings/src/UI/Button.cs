@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.UI;
 
-public static class NativeBindings
+public static class NativeBindings_Button
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void TriggerClick();
@@ -17,10 +18,10 @@ public class Button
     private IntPtr _native;
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Button_UIElement(IntPtr instance, IntPtr unnamed);
-    public IntPtr UIElement(IntPtr unnamed)
+    private static extern void Button_Draw(IntPtr instance, IntPtr canvas, IntPtr arg1);
+    public void Draw(IntPtr canvas, IntPtr arg1)
     {
-        return Button_UIElement(_native, unnamed);
+        Button_Draw(_native, canvas, arg1);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void Button_TriggerClick(IntPtr instance);

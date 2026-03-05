@@ -5,27 +5,28 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_Renderer
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Target();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr CmdBuffer();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Clear(IntPtr color);
+    public static extern void Clear(uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void FillRect(int x, int y, int w, int h, IntPtr color);
+    public static extern void FillRect(int x, int y, int w, int h, uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void DrawSurface(IntPtr src, int x, int y);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawQuad(IntPtr texture, int x, int y, int w, int h, IntPtr tint);
+    public static extern void DrawQuad(IntPtr texture, int x, int y, int w, int h, uint tint);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Submit();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawText(IntPtr text, int x, int y, IntPtr color);
+    public static extern void DrawText(IntPtr text, int x, int y, uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawChar(sbyte c, int x, int y, IntPtr color);
+    public static extern void DrawChar(sbyte c, int x, int y, uint color);
 }
 
 public class Renderer
@@ -34,7 +35,7 @@ public class Renderer
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr Renderer_Create(IntPtr target);
-    public Renderer() { _native = Renderer_Create(); }
+    public Renderer(IntPtr target) { _native = Renderer_Create(target); }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr Renderer_Target(IntPtr instance);
     public IntPtr Target()
@@ -54,14 +55,14 @@ public class Renderer
         return Renderer_CmdBuffer(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Renderer_Clear(IntPtr instance, IntPtr color);
-    public void Clear(IntPtr color)
+    private static extern void Renderer_Clear(IntPtr instance, uint color);
+    public void Clear(uint color)
     {
         Renderer_Clear(_native, color);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Renderer_FillRect(IntPtr instance, int x, int y, int w, int h, IntPtr color);
-    public void FillRect(int x, int y, int w, int h, IntPtr color)
+    private static extern void Renderer_FillRect(IntPtr instance, int x, int y, int w, int h, uint color);
+    public void FillRect(int x, int y, int w, int h, uint color)
     {
         Renderer_FillRect(_native, x, y, w, h, color);
     }
@@ -72,8 +73,8 @@ public class Renderer
         Renderer_DrawSurface(_native, src, x, y);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Renderer_DrawQuad(IntPtr instance, IntPtr texture, int x, int y, int w, int h, IntPtr tint);
-    public void DrawQuad(IntPtr texture, int x, int y, int w, int h, IntPtr tint)
+    private static extern void Renderer_DrawQuad(IntPtr instance, IntPtr texture, int x, int y, int w, int h, uint tint);
+    public void DrawQuad(IntPtr texture, int x, int y, int w, int h, uint tint)
     {
         Renderer_DrawQuad(_native, texture, x, y, w, h, tint);
     }
@@ -84,27 +85,15 @@ public class Renderer
         Renderer_Submit(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Renderer_DrawText(IntPtr instance, IntPtr text, int x, int y, IntPtr color);
-    public void DrawText(IntPtr text, int x, int y, IntPtr color)
+    private static extern void Renderer_DrawText(IntPtr instance, IntPtr text, int x, int y, uint color);
+    public void DrawText(IntPtr text, int x, int y, uint color)
     {
         Renderer_DrawText(_native, text, x, y, color);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Renderer_DrawChar(IntPtr instance, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed);
-    public IntPtr DrawChar(IntPtr unnamed, IntPtr unnamed, IntPtr unnamed, IntPtr unnamed)
-    {
-        return Renderer_DrawChar(_native, unnamed, unnamed, unnamed, unnamed);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Renderer_DrawChar(IntPtr instance, sbyte c, int x, int y, IntPtr color);
-    public void DrawChar(sbyte c, int x, int y, IntPtr color)
+    private static extern void Renderer_DrawChar(IntPtr instance, sbyte c, int x, int y, uint color);
+    public void DrawChar(sbyte c, int x, int y, uint color)
     {
         Renderer_DrawChar(_native, c, x, y, color);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Renderer_if(IntPtr instance, IntPtr col);
-    public IntPtr if(IntPtr col)
-    {
-        return Renderer_if(_native, col);
     }
 }

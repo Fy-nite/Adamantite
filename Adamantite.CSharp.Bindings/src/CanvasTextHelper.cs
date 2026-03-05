@@ -5,15 +5,16 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings;
 
-public static class NativeBindings
+public static class NativeBindings_CanvasTextHelper
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Prin(IntPtr c, int x, int y, IntPtr text, IntPtr color);
+    public static extern void Prin(IntPtr c, int x, int y, IntPtr text, IntPtr color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr GetGlyphs();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr DrawText(IntPtr c, int x, int y, IntPtr text, IntPtr color);
+    public static extern void DrawText(IntPtr c, int x, int y, IntPtr text, IntPtr color);
 }
 
 public class CanvasTextHelper
@@ -21,16 +22,10 @@ public class CanvasTextHelper
     private IntPtr _native;
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr CanvasTextHelper_Prin(IntPtr instance, IntPtr c, int x, int y, IntPtr text, IntPtr color);
-    public IntPtr Prin(IntPtr c, int x, int y, IntPtr text, IntPtr color)
+    private static extern void CanvasTextHelper_Prin(IntPtr instance, IntPtr c, int x, int y, IntPtr text, IntPtr color);
+    public void Prin(IntPtr c, int x, int y, IntPtr text, IntPtr color)
     {
-        return CanvasTextHelper_Prin(_native, c, x, y, text, color);
-    }
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr CanvasTextHelper_if(IntPtr instance, IntPtr unnamed);
-    public IntPtr if(IntPtr unnamed)
-    {
-        return CanvasTextHelper_if(_native, unnamed);
+        CanvasTextHelper_Prin(_native, c, x, y, text, color);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr CanvasTextHelper_GetGlyphs(IntPtr instance);

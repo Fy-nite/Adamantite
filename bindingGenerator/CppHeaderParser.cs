@@ -7,6 +7,71 @@ namespace Adamantite.BindingGenerator
 {
     public class CppHeaderParser
     {
+        // C/C++ keywords that should never appear as function/method names
+        private static readonly HashSet<string> CppKeywords = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "if", "else", "for", "while", "do", "switch", "case", "break", "continue",
+            "return", "goto", "try", "catch", "throw", "new", "delete",
+            "class", "struct", "union", "enum", "namespace", "template", "typename",
+            "public", "private", "protected", "virtual", "override", "final",
+            "static", "inline", "const", "constexpr", "volatile", "mutable",
+            "explicit", "extern", "auto", "register", "typedef", "using",
+            "sizeof", "alignof", "decltype", "static_cast", "dynamic_cast",
+            "reinterpret_cast", "const_cast", "nullptr", "true", "false",
+            "and", "or", "not", "xor", "bitand", "bitor", "compl",
+            // common standard-library function names that appear in method bodies
+            "lock", "guard", "emplace", "push_back", "erase", "find", "begin", "end",
+            "max", "min", "abs", "size", "empty", "clear", "count", "reserve",
+            "substr", "replace", "remove", "sort", "assert"
+        };
+
+        // Strip leading/trailing C++ qualifiers from a type string
+        private static string StripQualifiers(string type)
+        {
+            if (string.IsNullOrWhiteSpace(type)) return type;
+            type = type.Trim();
+            string[] leading = { "constexpr ", "inline ", "virtual ", "explicit ", "override ", "final ", "static ", "volatile ", "const " };
+            bool changed = true;
+            while (changed)
+            {
+                changed = false;
+                foreach (var q in leading)
+                {
+                    if (type.StartsWith(q)) { type = type.Substring(q.Length).TrimStart(); changed = true; }
+                }
+            }
+            // strip trailing const
+            while (type.EndsWith(" const")) type = type.Substring(0, type.Length - 6).TrimEnd();
+            return type.Trim();
+        }
+
+        // Removes inline method bodies ({...}) from a class body string so that
+        // statements inside bodies are not mistaken for member declarations.
+        // Each removed body is replaced with a ';' to preserve declaration splitting.
+        private static string StripInlineMethodBodies(string body)
+        {
+            var result = new System.Text.StringBuilder();
+            int depth = 0;
+            for (int i = 0; i < body.Length; i++)
+            {
+                if (body[i] == '{')
+                {
+                    depth++;
+                    if (depth == 1) result.Append(';'); // end the declaration before its body
+                }
+                else if (body[i] == '}')
+                {
+                    depth--;
+                    // don't emit the closing brace
+                }
+                else if (depth == 0)
+                {
+                    result.Append(body[i]);
+                }
+            }
+            return result.ToString();
+        }
+
         public List<CppFunction> ParseFunctions(string headerFilePath)
         {
             var functions = new List<CppFunction>();
@@ -26,14 +91,18 @@ namespace Adamantite.BindingGenerator
             {
                 try
                 {
-                    var returnType = match.Groups[1].Value.Trim();
+                    var returnType = StripQualifiers(match.Groups[1].Value.Trim());
                     var name = match.Groups[2].Value.Trim();
                     var rawParams = match.Groups[3].Value.Trim();
 
                     var parameters = ParseParameters(rawParams);
 
-                    // Skip operators and templates and likely macros
+                    // Skip operators, templates and likely macros
                     if (name.StartsWith("operator"))
+                        continue;
+
+                    // Skip C/C++ keywords used as names (parser artefacts from inline bodies)
+                    if (CppKeywords.Contains(name))
                         continue;
 
                     functions.Add(new CppFunction
@@ -88,9 +157,23 @@ namespace Adamantite.BindingGenerator
                 var name = content.Substring(nameStart, i - nameStart).Trim();
                 Console.WriteLine($"[ParseClasses] extracted name: '{name}' (start={nameStart}, len={i-nameStart})");
 
-                // find opening brace
-                while (i < content.Length && content[i] != '{') i++;
-                if (i >= content.Length) break;
+                // Skip whitespace after name to detect forward declarations
+                while (i < content.Length && char.IsWhiteSpace(content[i])) i++;
+
+                // If the very next non-whitespace is ';', this is a forward declaration — skip it
+                if (i < content.Length && content[i] == ';')
+                {
+                    i++;
+                    continue;
+                }
+
+                // find opening brace; if we hit ';' first it's also a forward declaration
+                while (i < content.Length && content[i] != '{' && content[i] != ';') i++;
+                if (i >= content.Length || content[i] == ';')
+                {
+                    if (i < content.Length) i++; // skip ';'
+                    continue;
+                }
                 i++; // past '{'
                 var bodyStart = i;
                 int depth = 1;
@@ -107,20 +190,33 @@ namespace Adamantite.BindingGenerator
 
                 var cppClass = new CppClass { Name = name, IsStruct = kind == "struct" };
 
+                // Remove inline method bodies so their statements aren't parsed as member declarations
+                var cleanBody = StripInlineMethodBodies(body);
+
                 // split members by ';' and parse each
-                var members = body.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                var members = cleanBody.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                 var functionPattern = new Regex(@"([\w\:\<\>\s\*&]+?)\s+([A-Za-z_]\w*)\s*\(([^\)]*)\)", RegexOptions.Compiled);
                 foreach (var mem in members)
                 {
                     var mstr = mem.Trim();
                     if (string.IsNullOrWhiteSpace(mstr)) continue;
 
+                    // Strip constructor initializer list: "Foo() : X(0), Y(0)..." → "Foo()"
+                    mstr = Regex.Replace(mstr, @"\)\s*:(?!:).*$", ")", RegexOptions.Singleline);
+
                     var fmatch = functionPattern.Match(mstr);
                     if (fmatch.Success)
                     {
-                        var returnType = fmatch.Groups[1].Value.Trim();
+                        var returnType = StripQualifiers(fmatch.Groups[1].Value.Trim());
                         var fname = fmatch.Groups[2].Value.Trim();
                         var rawParams = fmatch.Groups[3].Value.Trim();
+
+                        // Skip C/C++ keywords parsed as names from inline method bodies
+                        if (CppKeywords.Contains(fname))
+                            continue;
+                        if (fname.StartsWith("operator"))
+                            continue;
+
                         var parameters = ParseParameters(rawParams);
                         cppClass.Methods.Add(new CppFunction { ReturnType = returnType, Name = fname, Parameters = parameters });
                     }
@@ -194,13 +290,20 @@ namespace Adamantite.BindingGenerator
                 var tokens = p.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (tokens.Length == 1)
                 {
-                    result.Add(new CppParameter { Type = tokens[0].Trim(), Name = string.Empty });
+                    result.Add(new CppParameter { Type = StripQualifiers(tokens[0].Trim()), Name = string.Empty });
                 }
                 else
                 {
+                    // last token is the parameter name; rest is the type
                     var name = tokens[tokens.Length - 1];
-                    var type = string.Join(" ", tokens, 0, tokens.Length - 1);
-                    result.Add(new CppParameter { Type = type.Trim(), Name = name.Trim() });
+                    // strip pointer/ref from name if accidentally captured there
+                    name = name.TrimStart('*', '&');
+                    var type = StripQualifiers(string.Join(" ", tokens, 0, tokens.Length - 1).Trim());
+                    // if name is a keyword or empty, treat whole thing as unnamed type
+                    if (string.IsNullOrEmpty(name))
+                        result.Add(new CppParameter { Type = type, Name = string.Empty });
+                    else
+                        result.Add(new CppParameter { Type = type, Name = name.Trim() });
                 }
             }
 

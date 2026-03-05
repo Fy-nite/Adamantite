@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings;
 
-public static class NativeBindings
+public static class NativeBindings_FpsCounter
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Tick(double elapsedSeconds);
@@ -21,6 +22,12 @@ public class FpsCounter
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr FpsCounter_Create();
     public FpsCounter() { _native = FpsCounter_Create(); }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
+    private static extern double FpsCounter_Fps(IntPtr instance);
+    public double Fps()
+    {
+        return FpsCounter_Fps(_native);
+    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void FpsCounter_Tick(IntPtr instance, double elapsedSeconds);
     public void Tick(double elapsedSeconds)

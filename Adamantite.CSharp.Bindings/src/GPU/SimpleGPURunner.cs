@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_SimpleGPURunner
 {
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr _target(IntPtr arg0);
@@ -20,5 +21,11 @@ public class SimpleGPURunner
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr SimpleGPURunner_Create(IntPtr target);
-    public SimpleGPURunner() { _native = SimpleGPURunner_Create(); }
+    public SimpleGPURunner(IntPtr target) { _native = SimpleGPURunner_Create(target); }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void SimpleGPURunner_Execute(IntPtr instance, IntPtr cb);
+    public void Execute(IntPtr cb)
+    {
+        SimpleGPURunner_Execute(_native, cb);
+    }
 }

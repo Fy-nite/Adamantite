@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.GPU;
 
-public static class NativeBindings
+public static class NativeBindings_IRenderBackend
 {
 }
 
@@ -24,26 +25,26 @@ public class IRenderBackend
     private IntPtr _native;
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderBackend_Initialize(IntPtr instance, IntPtr engine, IntPtr canvas);
-    public IntPtr Initialize(IntPtr engine, IntPtr canvas)
+    private static extern void IRenderBackend_Initialize(IntPtr instance, IntPtr engine, IntPtr canvas);
+    public void Initialize(IntPtr engine, IntPtr canvas)
     {
-        return IRenderBackend_Initialize(_native, engine, canvas);
+        IRenderBackend_Initialize(_native, engine, canvas);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderBackend_Upload(IntPtr instance, IntPtr canvas, IntPtr regions);
-    public IntPtr Upload(IntPtr canvas, IntPtr regions)
+    private static extern void IRenderBackend_Upload(IntPtr instance, IntPtr canvas, IntPtr regions);
+    public void Upload(IntPtr canvas, IntPtr regions)
     {
-        return IRenderBackend_Upload(_native, canvas, regions);
+        IRenderBackend_Upload(_native, canvas, regions);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderBackend_Present(IntPtr instance);
-    public IntPtr Present()
+    private static extern void IRenderBackend_Present(IntPtr instance);
+    public void Present()
     {
-        return IRenderBackend_Present(_native);
+        IRenderBackend_Present(_native);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr IRenderBackend_PumpEvents(IntPtr instance);
-    public IntPtr PumpEvents()
+    private static extern bool IRenderBackend_PumpEvents(IntPtr instance);
+    public bool PumpEvents()
     {
         return IRenderBackend_PumpEvents(_native);
     }

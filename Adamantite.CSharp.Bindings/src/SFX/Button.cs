@@ -5,8 +5,9 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
+namespace AdamantiteBindings.SFX;
 
-public static class NativeBindings
+public static class NativeBindings_Button
 {
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr PlayClick(IntPtr soundSystem, IntPtr bus, float defaultPitch);
@@ -23,11 +24,5 @@ public class Button
     public IntPtr PlayClick(IntPtr soundSystem, IntPtr bus, float defaultPitch)
     {
         return Button_PlayClick(_native, soundSystem, bus, defaultPitch);
-    }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Button_synth(IntPtr instance, IntPtr unnamed, IntPtr unnamed);
-    public IntPtr synth(IntPtr unnamed, IntPtr unnamed)
-    {
-        return Button_synth(_native, unnamed, unnamed);
     }
 }
