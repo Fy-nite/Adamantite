@@ -57,6 +57,21 @@ namespace Adamantite.BindingGenerator
             var parser = new CppHeaderParser();
             var csGenerator = new CSharpBindingGenerator();
             var libraryName = new DirectoryInfo(_inputDirectory).Name;
+
+            // First pass: collect all class names across the entire input tree so that
+            // cross-file type references (e.g. VfsManager* in VFSGlobal.hpp) are marshaled correctly.
+            var globalKnownClasses = new HashSet<string>();
+            foreach (var hf in headerFiles)
+            {
+                try
+                {
+                    foreach (var c in parser.ParseClasses(hf))
+                        if (!c.IsStruct) globalKnownClasses.Add(c.Name);
+                }
+                catch { /* ignore pre-scan parse errors */ }
+            }
+
+            // Second pass: generate bindings with the full class registry
             foreach (var headerFile in headerFiles)
             {
                 Console.WriteLine($"Processing file: {headerFile}");
@@ -68,7 +83,7 @@ namespace Adamantite.BindingGenerator
                 var outputFileName = Path.GetFileNameWithoutExtension(headerFile) + ".cs";
                 var outputDir = Path.Combine(_outputDirectory, relativeDir);
                 var outputPath = Path.Combine(outputDir, outputFileName);
-                csGenerator.GenerateCSharpBindings(functions, classes, outputPath, _headerContent, libraryName);
+                csGenerator.GenerateCSharpBindings(functions, classes, outputPath, _headerContent, libraryName, globalKnownClasses);
                 Console.WriteLine($"Generated: {outputPath}");
             }
         }

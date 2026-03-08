@@ -9,22 +9,85 @@ namespace AdamantiteBindings.Helpers;
 
 public static class NativeBindings_SoundSystem
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void SetAudioBackend(IntPtr backend);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "SetAudioBackend")]
+    private static extern void SetAudioBackend_Extern(IntPtr backend);
+    public static void SetAudioBackend(IAudioBackend backend)
+    {
+        var _raw_backend = backend._Handle;
+        SetAudioBackend_Extern(_raw_backend);
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void RegisterPostProcessor(IntPtr processor);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void CreateBus(IntPtr name, float volume);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool TryGetBus(IntPtr name, IntPtr _out);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void SetBusVolume(IntPtr name, float volume);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "CreateBus")]
+    private static extern void CreateBus_Extern(IntPtr name, float volume);
+    public static void CreateBus(string name, float volume)
+    {
+        var _raw_name = MarshalString(name);
+        CreateBus_Extern(_raw_name, volume);
+        FreeNative(_raw_name);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "TryGetBus")]
+    private static extern bool TryGetBus_Extern(IntPtr name, IntPtr _out);
+    public static bool TryGetBus(string name, SoundBus _out)
+    {
+        var _raw_name = MarshalString(name);
+        var _raw__out = _out._Handle;
+        var _ret = TryGetBus_Extern(_raw_name, _raw__out);
+        FreeNative(_raw_name);
+        return _ret;
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "SetBusVolume")]
+    private static extern void SetBusVolume_Extern(IntPtr name, float volume);
+    public static void SetBusVolume(string name, float volume)
+    {
+        var _raw_name = MarshalString(name);
+        SetBusVolume_Extern(_raw_name, volume);
+        FreeNative(_raw_name);
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void SetGlobalVolumeMultiplier(float multiplier);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void PlayOneShot(IntPtr pcm, IntPtr busName, float volume, float pitch, float pan);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void RemovePrecomputed(IntPtr key);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PlayOneShot")]
+    private static extern void PlayOneShot_Extern(IntPtr pcm, IntPtr busName, float volume, float pitch, float pan);
+    public static void PlayOneShot(IntPtr pcm, string busName, float volume, float pitch, float pan)
+    {
+        var _raw_busName = MarshalString(busName);
+        PlayOneShot_Extern(pcm, _raw_busName, volume, pitch, pan);
+        FreeNative(_raw_busName);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RemovePrecomputed")]
+    private static extern void RemovePrecomputed_Extern(IntPtr key);
+    public static void RemovePrecomputed(string key)
+    {
+        var _raw_key = MarshalString(key);
+        RemovePrecomputed_Extern(_raw_key);
+        FreeNative(_raw_key);
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void ClearPrecomputed();
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
@@ -40,7 +103,41 @@ public struct PcmBuffer
 public class IAudioBackend
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
 
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr IAudioBackend_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public IAudioBackend() { _native = IAudioBackend_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public IAudioBackend(IntPtr nativeHandle) { _native = nativeHandle; }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void IAudioBackend_PlayOneShot(IntPtr instance, IntPtr pcm, float volume, float pitch, float pan);
     public void PlayOneShot(IntPtr pcm, float volume, float pitch, float pan)
@@ -52,12 +149,47 @@ public class IAudioBackend
 public class SoundSystem
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr SoundSystem_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public SoundSystem() { _native = SoundSystem_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public SoundSystem(IntPtr nativeHandle) { _native = nativeHandle; }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SoundSystem_SetAudioBackend(IntPtr instance, IntPtr backend);
-    public void SetAudioBackend(IntPtr backend)
+    public void SetAudioBackend(IAudioBackend backend)
     {
-        SoundSystem_SetAudioBackend(_native, backend);
+        var _raw_backend = backend._Handle;
+        SoundSystem_SetAudioBackend(_native, _raw_backend);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SoundSystem_RegisterPostProcessor(IntPtr instance, IntPtr processor);
@@ -67,21 +199,29 @@ public class SoundSystem
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SoundSystem_CreateBus(IntPtr instance, IntPtr name, float volume);
-    public void CreateBus(IntPtr name, float volume)
+    public void CreateBus(string name, float volume)
     {
-        SoundSystem_CreateBus(_native, name, volume);
+        var _raw_name = MarshalString(name);
+        SoundSystem_CreateBus(_native, _raw_name, volume);
+        FreeNative(_raw_name);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern bool SoundSystem_TryGetBus(IntPtr instance, IntPtr name, IntPtr _out);
-    public bool TryGetBus(IntPtr name, IntPtr _out)
+    public bool TryGetBus(string name, SoundBus _out)
     {
-        return SoundSystem_TryGetBus(_native, name, _out);
+        var _raw_name = MarshalString(name);
+        var _raw__out = _out._Handle;
+        var _ret = SoundSystem_TryGetBus(_native, _raw_name, _raw__out);
+        FreeNative(_raw_name);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SoundSystem_SetBusVolume(IntPtr instance, IntPtr name, float volume);
-    public void SetBusVolume(IntPtr name, float volume)
+    public void SetBusVolume(string name, float volume)
     {
-        SoundSystem_SetBusVolume(_native, name, volume);
+        var _raw_name = MarshalString(name);
+        SoundSystem_SetBusVolume(_native, _raw_name, volume);
+        FreeNative(_raw_name);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SoundSystem_SetGlobalVolumeMultiplier(IntPtr instance, float multiplier);
@@ -91,27 +231,37 @@ public class SoundSystem
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SoundSystem_PlayOneShot(IntPtr instance, IntPtr pcm, IntPtr busName, float volume, float pitch, float pan);
-    public void PlayOneShot(IntPtr pcm, IntPtr busName, float volume, float pitch, float pan)
+    public void PlayOneShot(IntPtr pcm, string busName, float volume, float pitch, float pan)
     {
-        SoundSystem_PlayOneShot(_native, pcm, busName, volume, pitch, pan);
+        var _raw_busName = MarshalString(busName);
+        SoundSystem_PlayOneShot(_native, pcm, _raw_busName, volume, pitch, pan);
+        FreeNative(_raw_busName);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr SoundSystem_GetOrCreatePrecomputed(IntPtr instance, IntPtr key, IntPtr arg1);
-    public IntPtr GetOrCreatePrecomputed(IntPtr key, IntPtr arg1)
+    public IntPtr GetOrCreatePrecomputed(string key, IntPtr arg1)
     {
-        return SoundSystem_GetOrCreatePrecomputed(_native, key, arg1);
+        var _raw_key = MarshalString(key);
+        var _ret = SoundSystem_GetOrCreatePrecomputed(_native, _raw_key, arg1);
+        FreeNative(_raw_key);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr SoundSystem_TryGetPrecomputed(IntPtr instance, IntPtr key);
-    public IntPtr TryGetPrecomputed(IntPtr key)
+    public IntPtr TryGetPrecomputed(string key)
     {
-        return SoundSystem_TryGetPrecomputed(_native, key);
+        var _raw_key = MarshalString(key);
+        var _ret = SoundSystem_TryGetPrecomputed(_native, _raw_key);
+        FreeNative(_raw_key);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SoundSystem_RemovePrecomputed(IntPtr instance, IntPtr key);
-    public void RemovePrecomputed(IntPtr key)
+    public void RemovePrecomputed(string key)
     {
-        SoundSystem_RemovePrecomputed(_native, key);
+        var _raw_key = MarshalString(key);
+        SoundSystem_RemovePrecomputed(_native, _raw_key);
+        FreeNative(_raw_key);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SoundSystem_ClearPrecomputed(IntPtr instance);
@@ -120,15 +270,18 @@ public class SoundSystem
         SoundSystem_ClearPrecomputed(_native);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern float SoundSystem_Clamp(IntPtr instance, float v);
-    public float Clamp(float v)
+    private static extern float SoundSystem_Clamp(float v);
+    public static float Clamp(float v)
     {
-        return SoundSystem_Clamp(_native, v);
+        return SoundSystem_Clamp(v);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern float SoundSystem_BusVolume(IntPtr instance, IntPtr name);
-    public float BusVolume(IntPtr name)
+    public float BusVolume(string name)
     {
-        return SoundSystem_BusVolume(_native, name);
+        var _raw_name = MarshalString(name);
+        var _ret = SoundSystem_BusVolume(_native, _raw_name);
+        FreeNative(_raw_name);
+        return _ret;
     }
 }

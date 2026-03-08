@@ -5,26 +5,121 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
-namespace AdamantiteBindings;
+namespace Adamantite;
 
 public static class NativeBindings_Logging
 {
-    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void SetLogLevel(IntPtr level);
-    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr GetLogLevel();
-    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr ParseLogLevel(IntPtr str);
-    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Info(IntPtr message);
-    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Warning(IntPtr message);
-    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Error(IntPtr message);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl, EntryPoint = "SetLogLevel")]
+    private static extern void SetLogLevel_Extern(IntPtr level);
+    public static void SetLogLevel(LogLevel level)
+    {
+        var _raw_level = level._Handle;
+        SetLogLevel_Extern(_raw_level);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetLogLevel")]
+    private static extern IntPtr GetLogLevel_Extern();
+    public static LogLevel GetLogLevel()
+    {
+        var _ret = GetLogLevel_Extern();
+        return new LogLevel(_ret);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ParseLogLevel")]
+    private static extern IntPtr ParseLogLevel_Extern(IntPtr str);
+    public static LogLevel ParseLogLevel(string str)
+    {
+        var _raw_str = MarshalString(str);
+        var _ret = ParseLogLevel_Extern(_raw_str);
+        FreeNative(_raw_str);
+        return new LogLevel(_ret);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Info")]
+    private static extern void Info_Extern(IntPtr message);
+    public static void Info(string message)
+    {
+        var _raw_message = MarshalString(message);
+        Info_Extern(_raw_message);
+        FreeNative(_raw_message);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Warning")]
+    private static extern void Warning_Extern(IntPtr message);
+    public static void Warning(string message)
+    {
+        var _raw_message = MarshalString(message);
+        Warning_Extern(_raw_message);
+        FreeNative(_raw_message);
+    }
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Error")]
+    private static extern void Error_Extern(IntPtr message);
+    public static void Error(string message)
+    {
+        var _raw_message = MarshalString(message);
+        Error_Extern(_raw_message);
+        FreeNative(_raw_message);
+    }
 }
 
 public class LogLevel
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
 
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+
+    [DllImport("Adamantite.core", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr LogLevel_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public LogLevel() { _native = LogLevel_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public LogLevel(IntPtr nativeHandle) { _native = nativeHandle; }
 }

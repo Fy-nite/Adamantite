@@ -9,18 +9,78 @@ namespace AdamantiteBindings.Util;
 
 public static class NativeBindings_DebugUtil
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Debug(IntPtr msg);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Debug")]
+    private static extern IntPtr Debug_Extern(IntPtr msg);
+    public static IntPtr Debug(string msg)
+    {
+        var _raw_msg = MarshalString(msg);
+        var _ret = Debug_Extern(_raw_msg);
+        FreeNative(_raw_msg);
+        return _ret;
+    }
 }
 
-public class DebugUtil
+public static class DebugUtil
 {
-    private IntPtr _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DebugUtil_Debug(IntPtr instance, IntPtr msg);
-    public IntPtr Debug(IntPtr msg)
+    private static extern void DebugUtil_Debug(IntPtr msg);
+    public static void Debug(string msg)
     {
-        return DebugUtil_Debug(_native, msg);
+        var _raw_msg = MarshalString(msg);
+        DebugUtil_Debug(_raw_msg);
+        FreeNative(_raw_msg);
     }
 }

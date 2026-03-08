@@ -9,34 +9,92 @@ namespace AdamantiteBindings.VFS;
 
 public static class NativeBindings_VFSGlobal
 {
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Manager();
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void SetManager(IntPtr manager);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "SetManager")]
+    private static extern void SetManager_Extern(IntPtr manager);
+    public static void SetManager(VfsManager manager)
+    {
+        var _raw_manager = manager._Handle;
+        SetManager_Extern(_raw_manager);
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Initialize();
 }
 
-public class VFSGlobal
+public static class VFSGlobal
 {
-    private IntPtr _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VFSGlobal_Manager(IntPtr instance);
-    public IntPtr Manager()
+    private static extern IntPtr VFSGlobal_Manager();
+    public static VfsManager Manager()
     {
-        return VFSGlobal_Manager(_native);
+        var _ret = VFSGlobal_Manager();
+        return new VfsManager(_ret);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void VFSGlobal_SetManager(IntPtr instance, IntPtr manager);
-    public void SetManager(IntPtr manager)
+    private static extern void VFSGlobal_SetManager(IntPtr manager);
+    public static void SetManager(VfsManager manager)
     {
-        VFSGlobal_SetManager(_native, manager);
+        var _raw_manager = manager._Handle;
+        VFSGlobal_SetManager(_raw_manager);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void VFSGlobal_Initialize(IntPtr instance);
-    public void Initialize()
+    private static extern void VFSGlobal_Initialize();
+    public static void Initialize()
     {
-        VFSGlobal_Initialize(_native);
+        VFSGlobal_Initialize();
     }
 }

@@ -5,16 +5,64 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
-namespace AdamantiteBindings;
+namespace Adamantite;
 
 public static class NativeBindings_CanvasExtensions
 {
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawRect(IntPtr c, int x, int y, int w, int h, IntPtr color);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawLine(IntPtr c, int x0, int y0, int x1, int y1, IntPtr color);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawOutlinedRect(IntPtr c, int x, int y, int w, int h, IntPtr color);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawText(IntPtr c, int x, int y, IntPtr text, IntPtr color);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "DrawRect")]
+    private static extern void DrawRect_Extern(IntPtr c, int x, int y, int w, int h, IntPtr color);
+    public static void DrawRect(Canvas c, int x, int y, int w, int h, IntPtr color)
+    {
+        var _raw_c = c._Handle;
+        DrawRect_Extern(_raw_c, x, y, w, h, color);
+    }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "DrawLine")]
+    private static extern void DrawLine_Extern(IntPtr c, int x0, int y0, int x1, int y1, IntPtr color);
+    public static void DrawLine(Canvas c, int x0, int y0, int x1, int y1, IntPtr color)
+    {
+        var _raw_c = c._Handle;
+        DrawLine_Extern(_raw_c, x0, y0, x1, y1, color);
+    }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "DrawOutlinedRect")]
+    private static extern void DrawOutlinedRect_Extern(IntPtr c, int x, int y, int w, int h, IntPtr color);
+    public static void DrawOutlinedRect(Canvas c, int x, int y, int w, int h, IntPtr color)
+    {
+        var _raw_c = c._Handle;
+        DrawOutlinedRect_Extern(_raw_c, x, y, w, h, color);
+    }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "DrawText")]
+    private static extern void DrawText_Extern(IntPtr c, int x, int y, IntPtr text, IntPtr color);
+    public static void DrawText(Canvas c, int x, int y, string text, IntPtr color)
+    {
+        var _raw_c = c._Handle;
+        var _raw_text = MarshalString(text);
+        DrawText_Extern(_raw_c, x, y, _raw_text, color);
+        FreeNative(_raw_text);
+    }
 }

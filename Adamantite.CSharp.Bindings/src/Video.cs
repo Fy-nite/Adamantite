@@ -5,7 +5,7 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
-namespace AdamantiteBindings;
+namespace Adamantite;
 
 public static class NativeBindings_Video
 {

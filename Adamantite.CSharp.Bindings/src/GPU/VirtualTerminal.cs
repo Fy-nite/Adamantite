@@ -9,30 +9,84 @@ namespace AdamantiteBindings.GPU;
 
 public static class NativeBindings_VirtualTerminal
 {
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Default();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Clear();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Resize(int columns, int rows);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr nc(IntPtr columns, IntPtr _);
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "nc")]
+    private static extern IntPtr nc_Extern(IntPtr columns, IntPtr _, out UIntPtr _outSize);
+    public static byte[] nc(IntPtr columns, IntPtr _)
+    {
+        var _ptr = nc_Extern(columns, _, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr nf(IntPtr columns, IntPtr arg1);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr nb(IntPtr columns, IntPtr arg1);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Write(IntPtr text);
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Write")]
+    private static extern void Write_Extern(IntPtr text);
+    public static void Write(string text)
+    {
+        var _raw_text = MarshalString(text);
+        Write_Extern(_raw_text);
+        FreeNative(_raw_text);
+    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr PutChar(IntPtr arg0);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void WriteLine(IntPtr text);
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WriteLine")]
+    private static extern void WriteLine_Extern(IntPtr text);
+    public static void WriteLine(string text)
+    {
+        var _raw_text = MarshalString(text);
+        WriteLine_Extern(_raw_text);
+        FreeNative(_raw_text);
+    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void PutChar_1(sbyte c);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void PutStringAt(IntPtr text, int x, int y, uint fg, uint bg);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void RenderToSurface(IntPtr surface);
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PutStringAt")]
+    private static extern void PutStringAt_Extern(IntPtr text, int x, int y, uint fg, uint bg);
+    public static void PutStringAt(string text, int x, int y, uint fg, uint bg)
+    {
+        var _raw_text = MarshalString(text);
+        PutStringAt_Extern(_raw_text, x, y, fg, bg);
+        FreeNative(_raw_text);
+    }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RenderToSurface")]
+    private static extern void RenderToSurface_Extern(IntPtr surface);
+    public static void RenderToSurface(Surface surface)
+    {
+        var _raw_surface = surface._Handle;
+        RenderToSurface_Extern(_raw_surface);
+    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void RenderToCanvas(IntPtr canvas);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
@@ -42,7 +96,41 @@ public static class NativeBindings_VirtualTerminal
 public class VirtualTerminal
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
 
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr VirtualTerminal_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public VirtualTerminal() { _native = VirtualTerminal_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public VirtualTerminal(IntPtr nativeHandle) { _native = nativeHandle; }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern int VirtualTerminal_Columns(IntPtr instance);
     public int Columns()
@@ -81,15 +169,19 @@ public class VirtualTerminal
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_Write(IntPtr instance, IntPtr text);
-    public void Write(IntPtr text)
+    public void Write(string text)
     {
-        VirtualTerminal_Write(_native, text);
+        var _raw_text = MarshalString(text);
+        VirtualTerminal_Write(_native, _raw_text);
+        FreeNative(_raw_text);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_WriteLine(IntPtr instance, IntPtr text);
-    public void WriteLine(IntPtr text)
+    public void WriteLine(string text)
     {
-        VirtualTerminal_WriteLine(_native, text);
+        var _raw_text = MarshalString(text);
+        VirtualTerminal_WriteLine(_native, _raw_text);
+        FreeNative(_raw_text);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_PutChar(IntPtr instance, sbyte c);
@@ -99,21 +191,25 @@ public class VirtualTerminal
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_PutStringAt(IntPtr instance, IntPtr text, int x, int y, uint fg, uint bg);
-    public void PutStringAt(IntPtr text, int x, int y, uint fg, uint bg)
+    public void PutStringAt(string text, int x, int y, uint fg, uint bg)
     {
-        VirtualTerminal_PutStringAt(_native, text, x, y, fg, bg);
+        var _raw_text = MarshalString(text);
+        VirtualTerminal_PutStringAt(_native, _raw_text, x, y, fg, bg);
+        FreeNative(_raw_text);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr VirtualTerminal_GetCurrentLine(IntPtr instance);
-    public IntPtr GetCurrentLine()
+    public string GetCurrentLine()
     {
-        return VirtualTerminal_GetCurrentLine(_native);
+        var _ret = VirtualTerminal_GetCurrentLine(_native);
+        return MarshalPtrToString(_ret);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_RenderToSurface(IntPtr instance, IntPtr surface);
-    public void RenderToSurface(IntPtr surface)
+    public void RenderToSurface(Surface surface)
     {
-        VirtualTerminal_RenderToSurface(_native, surface);
+        var _raw_surface = surface._Handle;
+        VirtualTerminal_RenderToSurface(_native, _raw_surface);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VirtualTerminal_RenderToCanvas(IntPtr instance, IntPtr canvas);

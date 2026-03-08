@@ -3,6 +3,7 @@
 // For more information, visit the Adamantite repository:
 // Repo: https://github.com/fy-nite/Adamantite
 // Version: 0.1.0
+using Adamantite;
 using System;
 using System.Runtime.InteropServices;
 namespace AdamantiteBindings.UI;
@@ -31,15 +32,44 @@ public struct Rect
 public class UIElement
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr UIElement_Create(IntPtr bounds);
     public UIElement(IntPtr bounds) { _native = UIElement_Create(bounds); }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void UIElement_Draw(IntPtr instance, IntPtr canvas, IntPtr clip);
-    public void Draw(IntPtr canvas, IntPtr clip)
+    public void Draw(Canvas canvas, IntPtr clip)
     {
-        UIElement_Draw(_native, canvas, clip);
+        var _raw_canvas = canvas._Handle;
+        UIElement_Draw(_native, _raw_canvas, clip);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void UIElement_Invalidate(IntPtr instance, IntPtr area);

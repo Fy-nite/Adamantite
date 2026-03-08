@@ -9,8 +9,41 @@ namespace AdamantiteBindings.VFS;
 
 public static class NativeBindings_PhysicalFileSystem
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr PhysicalFileSystem(IntPtr rootPath);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PhysicalFileSystem")]
+    private static extern IntPtr PhysicalFileSystem_Extern(IntPtr rootPath);
+    public static IntPtr PhysicalFileSystem(string rootPath)
+    {
+        var _raw_rootPath = MarshalString(rootPath);
+        var _ret = PhysicalFileSystem_Extern(_raw_rootPath);
+        FreeNative(_raw_rootPath);
+        return _ret;
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr f(IntPtr arg0, IntPtr arg1);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
@@ -20,56 +53,112 @@ public static class NativeBindings_PhysicalFileSystem
 public class PhysicalFileSystem
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr PhysicalFileSystem_Create(IntPtr rootPath);
-    public PhysicalFileSystem(IntPtr rootPath) { _native = PhysicalFileSystem_Create(rootPath); }
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr PhysicalFileSystem_ReadAllBytes(IntPtr instance, IntPtr path);
-    public IntPtr ReadAllBytes(IntPtr path)
+    public PhysicalFileSystem(string rootPath)
     {
-        return PhysicalFileSystem_ReadAllBytes(_native, path);
+        var _raw_rootPath = MarshalString(rootPath);
+        _native = PhysicalFileSystem_Create(_raw_rootPath);
+        FreeNative(_raw_rootPath);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void PhysicalFileSystem_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data);
-    public void WriteAllBytes(IntPtr path, IntPtr data)
+    private static extern IntPtr PhysicalFileSystem_ReadAllBytes(IntPtr instance, IntPtr path, out UIntPtr _outSize);
+    public byte[] ReadAllBytes(string path)
     {
-        PhysicalFileSystem_WriteAllBytes(_native, path, data);
+        var _raw_path = MarshalString(path);
+        var _ptr = PhysicalFileSystem_ReadAllBytes(_native, _raw_path, out var _outSize);
+        FreeNative(_raw_path);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void PhysicalFileSystem_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data, UIntPtr dataLen);
+    public void WriteAllBytes(string path, byte[] data)
+    {
+        var _raw_path = MarshalString(path);
+        var _gc_data = GCHandle.Alloc(data, GCHandleType.Pinned);
+        PhysicalFileSystem_WriteAllBytes(_native, _raw_path, _gc_data.AddrOfPinnedObject(), (UIntPtr)data.Length);
+        FreeNative(_raw_path);
+        _gc_data.Free();
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern bool PhysicalFileSystem_Exists(IntPtr instance, IntPtr path);
-    public bool Exists(IntPtr path)
+    public bool Exists(string path)
     {
-        return PhysicalFileSystem_Exists(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = PhysicalFileSystem_Exists(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr PhysicalFileSystem_Enumerate(IntPtr instance, IntPtr path);
-    public IntPtr Enumerate(IntPtr path)
+    public IntPtr Enumerate(string path)
     {
-        return PhysicalFileSystem_Enumerate(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = PhysicalFileSystem_Enumerate(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr PhysicalFileSystem_GetFileInfo(IntPtr instance, IntPtr path);
-    public IntPtr GetFileInfo(IntPtr path)
+    public IntPtr GetFileInfo(string path)
     {
-        return PhysicalFileSystem_GetFileInfo(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = PhysicalFileSystem_GetFileInfo(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void PhysicalFileSystem_CreateDirectory(IntPtr instance, IntPtr path);
-    public void CreateDirectory(IntPtr path)
+    public void CreateDirectory(string path)
     {
-        PhysicalFileSystem_CreateDirectory(_native, path);
+        var _raw_path = MarshalString(path);
+        PhysicalFileSystem_CreateDirectory(_native, _raw_path);
+        FreeNative(_raw_path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void PhysicalFileSystem_Delete(IntPtr instance, IntPtr path);
-    public void Delete(IntPtr path)
+    public void Delete(string path)
     {
-        PhysicalFileSystem_Delete(_native, path);
+        var _raw_path = MarshalString(path);
+        PhysicalFileSystem_Delete(_native, _raw_path);
+        FreeNative(_raw_path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr PhysicalFileSystem_ToPhysical(IntPtr instance, IntPtr path);
-    public IntPtr ToPhysical(IntPtr path)
+    public IntPtr ToPhysical(string path)
     {
-        return PhysicalFileSystem_ToPhysical(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = PhysicalFileSystem_ToPhysical(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
 }

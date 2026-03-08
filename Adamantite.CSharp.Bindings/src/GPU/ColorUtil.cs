@@ -27,50 +27,75 @@ public static class NativeBindings_ColorUtil
     public static extern uint Multiply(uint color, uint tint);
 }
 
-public class ColorUtil
+public static class ColorUtil
 {
-    private IntPtr _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr ColorUtil_FromRgba(IntPtr instance, byte r, byte g, byte b, byte a);
-    public IntPtr FromRgba(byte r, byte g, byte b, byte a)
+    private static extern uint ColorUtil_FromRgba(byte r, byte g, byte b, byte a);
+    public static uint FromRgba(byte r, byte g, byte b, byte a)
     {
-        return ColorUtil_FromRgba(_native, r, g, b, a);
+        return ColorUtil_FromRgba(r, g, b, a);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern byte ColorUtil_A(IntPtr instance, uint argb);
-    public byte A(uint argb)
+    private static extern byte ColorUtil_A(uint argb);
+    public static byte A(uint argb)
     {
-        return ColorUtil_A(_native, argb);
+        return ColorUtil_A(argb);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern byte ColorUtil_R(IntPtr instance, uint argb);
-    public byte R(uint argb)
+    private static extern byte ColorUtil_R(uint argb);
+    public static byte R(uint argb)
     {
-        return ColorUtil_R(_native, argb);
+        return ColorUtil_R(argb);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern byte ColorUtil_G(IntPtr instance, uint argb);
-    public byte G(uint argb)
+    private static extern byte ColorUtil_G(uint argb);
+    public static byte G(uint argb)
     {
-        return ColorUtil_G(_native, argb);
+        return ColorUtil_G(argb);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern byte ColorUtil_B(IntPtr instance, uint argb);
-    public byte B(uint argb)
+    private static extern byte ColorUtil_B(uint argb);
+    public static byte B(uint argb)
     {
-        return ColorUtil_B(_native, argb);
+        return ColorUtil_B(argb);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern uint ColorUtil_Blend(IntPtr instance, uint src, uint dst);
-    public uint Blend(uint src, uint dst)
+    private static extern uint ColorUtil_Blend(uint src, uint dst);
+    public static uint Blend(uint src, uint dst)
     {
-        return ColorUtil_Blend(_native, src, dst);
+        return ColorUtil_Blend(src, dst);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern uint ColorUtil_Multiply(IntPtr instance, uint color, uint tint);
-    public uint Multiply(uint color, uint tint)
+    private static extern uint ColorUtil_Multiply(uint color, uint tint);
+    public static uint Multiply(uint color, uint tint)
     {
-        return ColorUtil_Multiply(_native, color, tint);
+        return ColorUtil_Multiply(color, tint);
     }
 }

@@ -9,20 +9,80 @@ namespace AdamantiteBindings.SFX;
 
 public static class NativeBindings_Button
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr PlayClick(IntPtr soundSystem, IntPtr bus, float defaultPitch);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PlayClick")]
+    private static extern IntPtr PlayClick_Extern(IntPtr soundSystem, IntPtr bus, float defaultPitch);
+    public static IntPtr PlayClick(IntPtr soundSystem, string bus, float defaultPitch)
+    {
+        var _raw_bus = MarshalString(bus);
+        var _ret = PlayClick_Extern(soundSystem, _raw_bus, defaultPitch);
+        FreeNative(_raw_bus);
+        return _ret;
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr synth(IntPtr arg0, IntPtr arg1);
 }
 
-public class Button
+public static class Button
 {
-    private IntPtr _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Button_PlayClick(IntPtr instance, IntPtr soundSystem, IntPtr bus, float defaultPitch);
-    public IntPtr PlayClick(IntPtr soundSystem, IntPtr bus, float defaultPitch)
+    private static extern void Button_PlayClick(IntPtr soundSystem, IntPtr bus, float defaultPitch);
+    public static void PlayClick(IntPtr soundSystem, string bus, float defaultPitch)
     {
-        return Button_PlayClick(_native, soundSystem, bus, defaultPitch);
+        var _raw_bus = MarshalString(bus);
+        Button_PlayClick(soundSystem, _raw_bus, defaultPitch);
+        FreeNative(_raw_bus);
     }
 }

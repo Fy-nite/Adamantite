@@ -5,7 +5,7 @@
 // Version: 0.1.0
 using System;
 using System.Runtime.InteropServices;
-namespace AdamantiteBindings;
+namespace Adamantite;
 
 public static class NativeBindings_FpsCounter
 {
@@ -18,10 +18,41 @@ public static class NativeBindings_FpsCounter
 public class FpsCounter
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr FpsCounter_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
     public FpsCounter() { _native = FpsCounter_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public FpsCounter(IntPtr nativeHandle) { _native = nativeHandle; }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern double FpsCounter_Fps(IntPtr instance);
     public double Fps()

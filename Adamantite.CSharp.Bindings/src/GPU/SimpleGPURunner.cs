@@ -9,23 +9,87 @@ namespace AdamantiteBindings.GPU;
 
 public static class NativeBindings_SimpleGPURunner
 {
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr _target(IntPtr arg0);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Execute(IntPtr cb);
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Execute")]
+    private static extern void Execute_Extern(IntPtr cb);
+    public static void Execute(CommandBuffer cb)
+    {
+        var _raw_cb = cb._Handle;
+        Execute_Extern(_raw_cb);
+    }
 }
 
 public class SimpleGPURunner
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr SimpleGPURunner_Create(IntPtr target);
-    public SimpleGPURunner(IntPtr target) { _native = SimpleGPURunner_Create(target); }
+    public SimpleGPURunner(Surface target)
+    {
+        var _raw_target = target._Handle;
+        _native = SimpleGPURunner_Create(_raw_target);
+    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void SimpleGPURunner_Execute(IntPtr instance, IntPtr cb);
-    public void Execute(IntPtr cb)
+    public void Execute(CommandBuffer cb)
     {
-        SimpleGPURunner_Execute(_native, cb);
+        var _raw_cb = cb._Handle;
+        SimpleGPURunner_Execute(_native, _raw_cb);
     }
 }

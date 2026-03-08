@@ -9,20 +9,91 @@ namespace AdamantiteBindings.Util;
 
 public static class NativeBindings_DiagnosticsProvider
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Info(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Warning(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Error(IntPtr header, IntPtr contents, IntPtr callStack);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Debug(IntPtr header, IntPtr contents, IntPtr callStack);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Emit")]
+    private static extern void Emit_Extern(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Emit(IntPtr level, string header, string contents, IntPtr callStack)
+    {
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        Emit_Extern(level, _raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Info")]
+    private static extern void Info_Extern(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Info(string header, string contents, IntPtr callStack)
+    {
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        Info_Extern(_raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Warning")]
+    private static extern void Warning_Extern(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Warning(string header, string contents, IntPtr callStack)
+    {
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        Warning_Extern(_raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Error")]
+    private static extern void Error_Extern(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Error(string header, string contents, IntPtr callStack)
+    {
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        Error_Extern(_raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Debug")]
+    private static extern void Debug_Extern(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Debug(string header, string contents, IntPtr callStack)
+    {
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        Debug_Extern(_raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr LevelName(IntPtr level);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr LevelColor(IntPtr level);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "LevelColor")]
+    private static extern IntPtr LevelColor_Extern(IntPtr level);
+    public static string LevelColor(IntPtr level)
+    {
+        var _ret = LevelColor_Extern(level);
+        return MarshalPtrToString(_ret);
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern bool EnableVirtualTerminal();
 }
@@ -30,53 +101,109 @@ public static class NativeBindings_DiagnosticsProvider
 public class DiagnosticsProvider
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void DiagnosticsProvider_Emit(IntPtr instance, IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
-    public void Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack)
+    private static extern IntPtr DiagnosticsProvider_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public DiagnosticsProvider() { _native = DiagnosticsProvider_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public DiagnosticsProvider(IntPtr nativeHandle) { _native = nativeHandle; }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void DiagnosticsProvider_Emit(IntPtr level, IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Emit(IntPtr level, string header, string contents, IntPtr callStack)
     {
-        DiagnosticsProvider_Emit(_native, level, header, contents, callStack);
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        DiagnosticsProvider_Emit(level, _raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void DiagnosticsProvider_Info(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
-    public void Info(IntPtr header, IntPtr contents, IntPtr callStack)
+    private static extern void DiagnosticsProvider_Info(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Info(string header, string contents, IntPtr callStack)
     {
-        DiagnosticsProvider_Info(_native, header, contents, callStack);
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        DiagnosticsProvider_Info(_raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void DiagnosticsProvider_Warning(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
-    public void Warning(IntPtr header, IntPtr contents, IntPtr callStack)
+    private static extern void DiagnosticsProvider_Warning(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Warning(string header, string contents, IntPtr callStack)
     {
-        DiagnosticsProvider_Warning(_native, header, contents, callStack);
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        DiagnosticsProvider_Warning(_raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void DiagnosticsProvider_Error(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
-    public void Error(IntPtr header, IntPtr contents, IntPtr callStack)
+    private static extern void DiagnosticsProvider_Error(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Error(string header, string contents, IntPtr callStack)
     {
-        DiagnosticsProvider_Error(_native, header, contents, callStack);
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        DiagnosticsProvider_Error(_raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void DiagnosticsProvider_Debug(IntPtr instance, IntPtr header, IntPtr contents, IntPtr callStack);
-    public void Debug(IntPtr header, IntPtr contents, IntPtr callStack)
+    private static extern void DiagnosticsProvider_Debug(IntPtr header, IntPtr contents, IntPtr callStack);
+    public static void Debug(string header, string contents, IntPtr callStack)
     {
-        DiagnosticsProvider_Debug(_native, header, contents, callStack);
+        var _raw_header = MarshalString(header);
+        var _raw_contents = MarshalString(contents);
+        DiagnosticsProvider_Debug(_raw_header, _raw_contents, callStack);
+        FreeNative(_raw_header);
+        FreeNative(_raw_contents);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_LevelName(IntPtr instance, IntPtr level);
-    public IntPtr LevelName(IntPtr level)
+    private static extern IntPtr DiagnosticsProvider_LevelName(IntPtr level);
+    public static string LevelName(IntPtr level)
     {
-        return DiagnosticsProvider_LevelName(_native, level);
+        var _ret = DiagnosticsProvider_LevelName(level);
+        return MarshalPtrToString(_ret);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr DiagnosticsProvider_LevelColor(IntPtr instance, IntPtr level);
-    public IntPtr LevelColor(IntPtr level)
+    private static extern IntPtr DiagnosticsProvider_LevelColor(IntPtr level);
+    public static string LevelColor(IntPtr level)
     {
-        return DiagnosticsProvider_LevelColor(_native, level);
+        var _ret = DiagnosticsProvider_LevelColor(level);
+        return MarshalPtrToString(_ret);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern bool DiagnosticsProvider_EnableVirtualTerminal(IntPtr instance);
-    public bool EnableVirtualTerminal()
+    private static extern bool DiagnosticsProvider_EnableVirtualTerminal();
+    public static bool EnableVirtualTerminal()
     {
-        return DiagnosticsProvider_EnableVirtualTerminal(_native);
+        return DiagnosticsProvider_EnableVirtualTerminal();
     }
 }

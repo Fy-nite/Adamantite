@@ -201,13 +201,21 @@ namespace Adamantite.BindingGenerator
                     var mstr = mem.Trim();
                     if (string.IsNullOrWhiteSpace(mstr)) continue;
 
+                    // Strip C++ access specifiers that may be fused with the next declaration
+                    // (e.g. "public:\n    void Foo()" after splitting by ';')
+                    mstr = Regex.Replace(mstr, @"^(?:public|private|protected)\s*:\s*", string.Empty, RegexOptions.Singleline).TrimStart();
+                    if (string.IsNullOrWhiteSpace(mstr)) continue;
+
                     // Strip constructor initializer list: "Foo() : X(0), Y(0)..." → "Foo()"
                     mstr = Regex.Replace(mstr, @"\)\s*:(?!:).*$", ")", RegexOptions.Singleline);
 
                     var fmatch = functionPattern.Match(mstr);
                     if (fmatch.Success)
                     {
-                        var returnType = StripQualifiers(fmatch.Groups[1].Value.Trim());
+                        var returnTypeRaw = fmatch.Groups[1].Value.Trim();
+                        var isStaticMethod = returnTypeRaw.Split(new[]{' '}, StringSplitOptions.RemoveEmptyEntries).Contains("static")
+                                          || mstr.TrimStart().StartsWith("static ");
+                        var returnType = StripQualifiers(returnTypeRaw);
                         var fname = fmatch.Groups[2].Value.Trim();
                         var rawParams = fmatch.Groups[3].Value.Trim();
 
@@ -218,7 +226,7 @@ namespace Adamantite.BindingGenerator
                             continue;
 
                         var parameters = ParseParameters(rawParams);
-                        cppClass.Methods.Add(new CppFunction { ReturnType = returnType, Name = fname, Parameters = parameters });
+                        cppClass.Methods.Add(new CppFunction { ReturnType = returnType, Name = fname, Parameters = parameters, IsStatic = isStaticMethod });
                     }
                     else
                     {
@@ -316,6 +324,7 @@ namespace Adamantite.BindingGenerator
         public string ReturnType { get; set; }
         public string Name { get; set; }
         public List<CppParameter> Parameters { get; set; } = new List<CppParameter>();
+        public bool IsStatic { get; set; }
     }
 
     public class CppParameter

@@ -9,6 +9,32 @@ namespace AdamantiteBindings.GPU;
 
 public static class NativeBindings_Surface
 {
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Pixels();
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
@@ -17,19 +43,63 @@ public static class NativeBindings_Surface
     public static extern void SetPixel(int x, int y, uint color);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void FillRect(int x, int y, int w, int h, uint color);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Blit(IntPtr src, int dstX, int dstY);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DrawTexturedQuad(IntPtr texture, int dstX, int dstY, int dstW, int dstH, uint tint);
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Blit")]
+    private static extern void Blit_Extern(IntPtr src, int dstX, int dstY);
+    public static void Blit(Surface src, int dstX, int dstY)
+    {
+        var _raw_src = src._Handle;
+        Blit_Extern(_raw_src, dstX, dstY);
+    }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "DrawTexturedQuad")]
+    private static extern void DrawTexturedQuad_Extern(IntPtr texture, int dstX, int dstY, int dstW, int dstH, uint tint);
+    public static void DrawTexturedQuad(Surface texture, int dstX, int dstY, int dstW, int dstH, uint tint)
+    {
+        var _raw_texture = texture._Handle;
+        DrawTexturedQuad_Extern(_raw_texture, dstX, dstY, dstW, dstH, tint);
+    }
 }
 
 public class Surface
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Surface_Width(IntPtr instance);
-    public IntPtr Width()
+    private static extern IntPtr Surface_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public Surface() { _native = Surface_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public Surface(IntPtr nativeHandle) { _native = nativeHandle; }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int Surface_Width(IntPtr instance);
+    public int Width()
     {
         return Surface_Width(_native);
     }
@@ -71,14 +141,16 @@ public class Surface
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void Surface_Blit(IntPtr instance, IntPtr src, int dstX, int dstY);
-    public void Blit(IntPtr src, int dstX, int dstY)
+    public void Blit(Surface src, int dstX, int dstY)
     {
-        Surface_Blit(_native, src, dstX, dstY);
+        var _raw_src = src._Handle;
+        Surface_Blit(_native, _raw_src, dstX, dstY);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void Surface_DrawTexturedQuad(IntPtr instance, IntPtr texture, int dstX, int dstY, int dstW, int dstH, uint tint);
-    public void DrawTexturedQuad(IntPtr texture, int dstX, int dstY, int dstW, int dstH, uint tint)
+    public void DrawTexturedQuad(Surface texture, int dstX, int dstY, int dstW, int dstH, uint tint)
     {
-        Surface_DrawTexturedQuad(_native, texture, dstX, dstY, dstW, dstH, tint);
+        var _raw_texture = texture._Handle;
+        Surface_DrawTexturedQuad(_native, _raw_texture, dstX, dstY, dstW, dstH, tint);
     }
 }

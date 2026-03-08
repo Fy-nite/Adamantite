@@ -9,116 +9,299 @@ namespace AdamantiteBindings.VFS;
 
 public static class NativeBindings_VfsManager
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Mount(IntPtr mountPoint, IntPtr fs);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Unmount(IntPtr mountPoint);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr ReadAllBytes(IntPtr path);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void WriteAllBytes(IntPtr path, IntPtr data);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool Exists(IntPtr path);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool FileExists(IntPtr path);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Mount")]
+    private static extern IntPtr Mount_Extern(IntPtr mountPoint, IntPtr fs);
+    public static IntPtr Mount(string mountPoint, IntPtr fs)
+    {
+        var _raw_mountPoint = MarshalString(mountPoint);
+        var _ret = Mount_Extern(_raw_mountPoint, fs);
+        FreeNative(_raw_mountPoint);
+        return _ret;
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Unmount")]
+    private static extern void Unmount_Extern(IntPtr mountPoint);
+    public static void Unmount(string mountPoint)
+    {
+        var _raw_mountPoint = MarshalString(mountPoint);
+        Unmount_Extern(_raw_mountPoint);
+        FreeNative(_raw_mountPoint);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ReadAllBytes")]
+    private static extern IntPtr ReadAllBytes_Extern(IntPtr path, out UIntPtr _outSize);
+    public static byte[] ReadAllBytes(string path)
+    {
+        var _raw_path = MarshalString(path);
+        var _ptr = ReadAllBytes_Extern(_raw_path, out var _outSize);
+        FreeNative(_raw_path);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WriteAllBytes")]
+    private static extern void WriteAllBytes_Extern(IntPtr path, IntPtr data, UIntPtr dataLen);
+    public static void WriteAllBytes(string path, byte[] data)
+    {
+        var _raw_path = MarshalString(path);
+        var _gc_data = GCHandle.Alloc(data, GCHandleType.Pinned);
+        WriteAllBytes_Extern(_raw_path, _gc_data.AddrOfPinnedObject(), (UIntPtr)data.Length);
+        FreeNative(_raw_path);
+        _gc_data.Free();
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Exists")]
+    private static extern bool Exists_Extern(IntPtr path);
+    public static bool Exists(string path)
+    {
+        var _raw_path = MarshalString(path);
+        var _ret = Exists_Extern(_raw_path);
+        FreeNative(_raw_path);
+        return _ret;
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "FileExists")]
+    private static extern bool FileExists_Extern(IntPtr path);
+    public static bool FileExists(string path)
+    {
+        var _raw_path = MarshalString(path);
+        var _ret = FileExists_Extern(_raw_path);
+        FreeNative(_raw_path);
+        return _ret;
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr Exists_1(IntPtr arg0);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Enumerate(IntPtr path);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr GetFileInfo(IntPtr path);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void CreateDirectory(IntPtr path);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Delete(IntPtr path);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Remove(IntPtr path);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr NormalizeMountPoint(IntPtr mp);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Resolve(IntPtr path);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Enumerate")]
+    private static extern IntPtr Enumerate_Extern(IntPtr path);
+    public static IntPtr Enumerate(string path)
+    {
+        var _raw_path = MarshalString(path);
+        var _ret = Enumerate_Extern(_raw_path);
+        FreeNative(_raw_path);
+        return _ret;
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetFileInfo")]
+    private static extern IntPtr GetFileInfo_Extern(IntPtr path);
+    public static IntPtr GetFileInfo(string path)
+    {
+        var _raw_path = MarshalString(path);
+        var _ret = GetFileInfo_Extern(_raw_path);
+        FreeNative(_raw_path);
+        return _ret;
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "CreateDirectory")]
+    private static extern void CreateDirectory_Extern(IntPtr path);
+    public static void CreateDirectory(string path)
+    {
+        var _raw_path = MarshalString(path);
+        CreateDirectory_Extern(_raw_path);
+        FreeNative(_raw_path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Delete")]
+    private static extern void Delete_Extern(IntPtr path);
+    public static void Delete(string path)
+    {
+        var _raw_path = MarshalString(path);
+        Delete_Extern(_raw_path);
+        FreeNative(_raw_path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Remove")]
+    private static extern void Remove_Extern(IntPtr path);
+    public static void Remove(string path)
+    {
+        var _raw_path = MarshalString(path);
+        Remove_Extern(_raw_path);
+        FreeNative(_raw_path);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "NormalizeMountPoint")]
+    private static extern IntPtr NormalizeMountPoint_Extern(IntPtr mp);
+    public static string NormalizeMountPoint(string mp)
+    {
+        var _raw_mp = MarshalString(mp);
+        var _ret = NormalizeMountPoint_Extern(_raw_mp);
+        FreeNative(_raw_mp);
+        return MarshalPtrToString(_ret);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Resolve")]
+    private static extern IntPtr Resolve_Extern(IntPtr path);
+    public static IntPtr Resolve(string path)
+    {
+        var _raw_path = MarshalString(path);
+        var _ret = Resolve_Extern(_raw_path);
+        FreeNative(_raw_path);
+        return _ret;
+    }
 }
 
 public class VfsManager
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VfsManager_Mount(IntPtr instance, IntPtr mountPoint, IntPtr fs);
-    public IntPtr Mount(IntPtr mountPoint, IntPtr fs)
+    private static extern IntPtr VfsManager_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public VfsManager() { _native = VfsManager_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public VfsManager(IntPtr nativeHandle) { _native = nativeHandle; }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void VfsManager_Mount(IntPtr instance, IntPtr mountPoint, IntPtr fs);
+    public void Mount(string mountPoint, IntPtr fs)
     {
-        return VfsManager_Mount(_native, mountPoint, fs);
+        var _raw_mountPoint = MarshalString(mountPoint);
+        VfsManager_Mount(_native, _raw_mountPoint, fs);
+        FreeNative(_raw_mountPoint);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VfsManager_Unmount(IntPtr instance, IntPtr mountPoint);
-    public void Unmount(IntPtr mountPoint)
+    public void Unmount(string mountPoint)
     {
-        VfsManager_Unmount(_native, mountPoint);
+        var _raw_mountPoint = MarshalString(mountPoint);
+        VfsManager_Unmount(_native, _raw_mountPoint);
+        FreeNative(_raw_mountPoint);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VfsManager_ReadAllBytes(IntPtr instance, IntPtr path);
-    public IntPtr ReadAllBytes(IntPtr path)
+    private static extern IntPtr VfsManager_ReadAllBytes(IntPtr instance, IntPtr path, out UIntPtr _outSize);
+    public byte[] ReadAllBytes(string path)
     {
-        return VfsManager_ReadAllBytes(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ptr = VfsManager_ReadAllBytes(_native, _raw_path, out var _outSize);
+        FreeNative(_raw_path);
+        return MarshalPtrToByteArray(_ptr, _outSize);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void VfsManager_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data);
-    public void WriteAllBytes(IntPtr path, IntPtr data)
+    private static extern void VfsManager_WriteAllBytes(IntPtr instance, IntPtr path, IntPtr data, UIntPtr dataLen);
+    public void WriteAllBytes(string path, byte[] data)
     {
-        VfsManager_WriteAllBytes(_native, path, data);
+        var _raw_path = MarshalString(path);
+        var _gc_data = GCHandle.Alloc(data, GCHandleType.Pinned);
+        VfsManager_WriteAllBytes(_native, _raw_path, _gc_data.AddrOfPinnedObject(), (UIntPtr)data.Length);
+        FreeNative(_raw_path);
+        _gc_data.Free();
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern bool VfsManager_Exists(IntPtr instance, IntPtr path);
-    public bool Exists(IntPtr path)
+    public bool Exists(string path)
     {
-        return VfsManager_Exists(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = VfsManager_Exists(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern bool VfsManager_FileExists(IntPtr instance, IntPtr path);
-    public bool FileExists(IntPtr path)
+    public bool FileExists(string path)
     {
-        return VfsManager_FileExists(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = VfsManager_FileExists(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr VfsManager_Enumerate(IntPtr instance, IntPtr path);
-    public IntPtr Enumerate(IntPtr path)
+    public IntPtr Enumerate(string path)
     {
-        return VfsManager_Enumerate(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = VfsManager_Enumerate(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr VfsManager_GetFileInfo(IntPtr instance, IntPtr path);
-    public IntPtr GetFileInfo(IntPtr path)
+    public IntPtr GetFileInfo(string path)
     {
-        return VfsManager_GetFileInfo(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = VfsManager_GetFileInfo(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VfsManager_CreateDirectory(IntPtr instance, IntPtr path);
-    public void CreateDirectory(IntPtr path)
+    public void CreateDirectory(string path)
     {
-        VfsManager_CreateDirectory(_native, path);
+        var _raw_path = MarshalString(path);
+        VfsManager_CreateDirectory(_native, _raw_path);
+        FreeNative(_raw_path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VfsManager_Delete(IntPtr instance, IntPtr path);
-    public void Delete(IntPtr path)
+    public void Delete(string path)
     {
-        VfsManager_Delete(_native, path);
+        var _raw_path = MarshalString(path);
+        VfsManager_Delete(_native, _raw_path);
+        FreeNative(_raw_path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern void VfsManager_Remove(IntPtr instance, IntPtr path);
-    public void Remove(IntPtr path)
+    public void Remove(string path)
     {
-        VfsManager_Remove(_native, path);
+        var _raw_path = MarshalString(path);
+        VfsManager_Remove(_native, _raw_path);
+        FreeNative(_raw_path);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VfsManager_NormalizeMountPoint(IntPtr instance, IntPtr mp);
-    public IntPtr NormalizeMountPoint(IntPtr mp)
+    private static extern IntPtr VfsManager_NormalizeMountPoint(IntPtr mp);
+    public static string NormalizeMountPoint(string mp)
     {
-        return VfsManager_NormalizeMountPoint(_native, mp);
+        var _raw_mp = MarshalString(mp);
+        var _ret = VfsManager_NormalizeMountPoint(_raw_mp);
+        FreeNative(_raw_mp);
+        return MarshalPtrToString(_ret);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr VfsManager_Resolve(IntPtr instance, IntPtr path);
-    public IntPtr Resolve(IntPtr path)
+    public IntPtr Resolve(string path)
     {
-        return VfsManager_Resolve(_native, path);
+        var _raw_path = MarshalString(path);
+        var _ret = VfsManager_Resolve(_native, _raw_path);
+        FreeNative(_raw_path);
+        return _ret;
     }
 }

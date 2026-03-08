@@ -9,14 +9,60 @@ namespace AdamantiteBindings.SFX;
 
 public static class NativeBindings_SimpleSynth
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr GenerateSineWavePcm(float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr bytes(IntPtr _2);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr GenerateWavePcm(float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr bytes_1(IntPtr _2);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "GenerateSineWavePcm")]
+    private static extern IntPtr GenerateSineWavePcm_Extern(float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels, out UIntPtr _outSize);
+    public static byte[] GenerateSineWavePcm(float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels)
+    {
+        var _ptr = GenerateSineWavePcm_Extern(frequencyHz, durationSeconds, sampleRate, amplitude, channels, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "bytes")]
+    private static extern IntPtr bytes_Extern(IntPtr _2, out UIntPtr _outSize);
+    public static byte[] bytes(IntPtr _2)
+    {
+        var _ptr = bytes_Extern(_2, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "GenerateWavePcm")]
+    private static extern IntPtr GenerateWavePcm_Extern(float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels, out UIntPtr _outSize);
+    public static byte[] GenerateWavePcm(float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels)
+    {
+        var _ptr = GenerateWavePcm_Extern(frequencyHz, durationSeconds, waveform, sampleRate, amplitude, channels, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "bytes")]
+    private static extern IntPtr bytes_1_Extern(IntPtr _2, out UIntPtr _outSize);
+    public static byte[] bytes_1(IntPtr _2)
+    {
+        var _ptr = bytes_1_Extern(_2, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern double MidiNoteToFrequency(int note);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
@@ -25,10 +71,20 @@ public static class NativeBindings_SimpleSynth
     public static extern void NoteOn(int midiNote, float velocity);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void NoteOff(int midiNote);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr RenderPcm(int frames);
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr bytes_2(IntPtr _2);
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RenderPcm")]
+    private static extern IntPtr RenderPcm_Extern(int frames, out UIntPtr _outSize);
+    public static byte[] RenderPcm(int frames)
+    {
+        var _ptr = RenderPcm_Extern(frames, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "bytes")]
+    private static extern IntPtr bytes_2_Extern(IntPtr _2, out UIntPtr _outSize);
+    public static byte[] bytes_2(IntPtr _2)
+    {
+        var _ptr = bytes_2_Extern(_2, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
+    }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
     public static extern void Start(int midiNote, float velocity, int sampleRate);
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
@@ -42,23 +98,59 @@ public static class NativeBindings_SimpleSynth
 public class SimpleSynth
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_GenerateSineWavePcm(IntPtr instance, float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels);
-    public IntPtr GenerateSineWavePcm(float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels)
+    private static extern IntPtr SimpleSynth_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public SimpleSynth() { _native = SimpleSynth_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public SimpleSynth(IntPtr nativeHandle) { _native = nativeHandle; }
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr SimpleSynth_GenerateSineWavePcm(float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels, out UIntPtr _outSize);
+    public static byte[] GenerateSineWavePcm(float frequencyHz, float durationSeconds, int sampleRate, float amplitude, int channels)
     {
-        return SimpleSynth_GenerateSineWavePcm(_native, frequencyHz, durationSeconds, sampleRate, amplitude, channels);
+        var _ptr = SimpleSynth_GenerateSineWavePcm(frequencyHz, durationSeconds, sampleRate, amplitude, channels, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr SimpleSynth_GenerateWavePcm(IntPtr instance, float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels);
-    public IntPtr GenerateWavePcm(float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels)
+    private static extern IntPtr SimpleSynth_GenerateWavePcm(float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels, out UIntPtr _outSize);
+    public static byte[] GenerateWavePcm(float frequencyHz, float durationSeconds, IntPtr waveform, int sampleRate, float amplitude, int channels)
     {
-        return SimpleSynth_GenerateWavePcm(_native, frequencyHz, durationSeconds, waveform, sampleRate, amplitude, channels);
+        var _ptr = SimpleSynth_GenerateWavePcm(frequencyHz, durationSeconds, waveform, sampleRate, amplitude, channels, out var _outSize);
+        return MarshalPtrToByteArray(_ptr, _outSize);
     }
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern double SimpleSynth_MidiNoteToFrequency(IntPtr instance, int note);
-    public double MidiNoteToFrequency(int note)
+    private static extern double SimpleSynth_MidiNoteToFrequency(int note);
+    public static double MidiNoteToFrequency(int note)
     {
-        return SimpleSynth_MidiNoteToFrequency(_native, note);
+        return SimpleSynth_MidiNoteToFrequency(note);
     }
 }

@@ -3,20 +3,62 @@
 // For more information, visit the Adamantite repository:
 // Repo: https://github.com/fy-nite/Adamantite
 // Version: 0.1.0
+using Adamantite;
 using System;
 using System.Runtime.InteropServices;
 namespace AdamantiteBindings.UI;
 
 public static class NativeBindings_UIManager
 {
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr Add(IntPtr e);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Remove(IntPtr e);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Add")]
+    private static extern IntPtr Add_Extern(IntPtr e);
+    public static IntPtr Add(UIElement e)
+    {
+        var _raw_e = e._Handle;
+        return Add_Extern(_raw_e);
+    }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Remove")]
+    private static extern void Remove_Extern(IntPtr e);
+    public static void Remove(UIElement e)
+    {
+        var _raw_e = e._Handle;
+        Remove_Extern(_raw_e);
+    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void NotifyInvalid(IntPtr r);
-    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr RenderDirty(IntPtr canvas);
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RenderDirty")]
+    private static extern IntPtr RenderDirty_Extern(IntPtr canvas);
+    public static IntPtr RenderDirty(Canvas canvas)
+    {
+        var _raw_canvas = canvas._Handle;
+        return RenderDirty_Extern(_raw_canvas);
+    }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     public static extern void ProcessInputAt(int mx, int my, bool mouseReleased);
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
@@ -28,18 +70,54 @@ public static class NativeBindings_UIManager
 public class UIManager
 {
     private IntPtr _native;
+    /// <summary>Exposes the raw native handle for interop use.</summary>
+    public IntPtr _Handle => _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr UIManager_Add(IntPtr instance, IntPtr e);
-    public IntPtr Add(IntPtr e)
+    private static extern IntPtr UIManager_Create();
+    /// <summary>Creates a new native instance via the default constructor.</summary>
+    public UIManager() { _native = UIManager_Create(); }
+    /// <summary>Wraps an existing native pointer. Does not take ownership.</summary>
+    public UIManager(IntPtr nativeHandle) { _native = nativeHandle; }
+    [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void UIManager_Add(IntPtr instance, IntPtr e);
+    public void Add(UIElement e)
     {
-        return UIManager_Add(_native, e);
+        var _raw_e = e._Handle;
+        UIManager_Add(_native, _raw_e);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void UIManager_Remove(IntPtr instance, IntPtr e);
-    public void Remove(IntPtr e)
+    public void Remove(UIElement e)
     {
-        UIManager_Remove(_native, e);
+        var _raw_e = e._Handle;
+        UIManager_Remove(_native, _raw_e);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void UIManager_NotifyInvalid(IntPtr instance, IntPtr r);
@@ -49,9 +127,10 @@ public class UIManager
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr UIManager_RenderDirty(IntPtr instance, IntPtr canvas);
-    public IntPtr RenderDirty(IntPtr canvas)
+    public IntPtr RenderDirty(Canvas canvas)
     {
-        return UIManager_RenderDirty(_native, canvas);
+        var _raw_canvas = canvas._Handle;
+        return UIManager_RenderDirty(_native, _raw_canvas);
     }
     [DllImport("Adamantite.video", CallingConvention = CallingConvention.Cdecl)]
     private static extern void UIManager_ProcessInputAt(IntPtr instance, int mx, int my, bool mouseReleased);

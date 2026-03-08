@@ -9,18 +9,81 @@ namespace AdamantiteBindings.VFS;
 
 public static class NativeBindings_VfsFontLoader
 {
-    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr LoadFont(IntPtr vfs, IntPtr fontPath);
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
+    [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "LoadFont")]
+    private static extern IntPtr LoadFont_Extern(IntPtr vfs, IntPtr fontPath);
+    public static IntPtr LoadFont(VfsManager vfs, string fontPath)
+    {
+        var _raw_vfs = vfs._Handle;
+        var _raw_fontPath = MarshalString(fontPath);
+        var _ret = LoadFont_Extern(_raw_vfs, _raw_fontPath);
+        FreeNative(_raw_fontPath);
+        return _ret;
+    }
 }
 
-public class VfsFontLoader
+public static class VfsFontLoader
 {
-    private IntPtr _native;
+
+    // ── Marshal helpers ────────────────────────────────────────────────────────
+    private static System.IntPtr MarshalString(string? s)
+    {
+        if (s is null) return System.IntPtr.Zero;
+        return System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(s);
+    }
+    private static void FreeNative(System.IntPtr p)
+    {
+        if (p != System.IntPtr.Zero)
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(p);
+    }
+    private static string MarshalPtrToString(System.IntPtr p)
+    {
+        if (p == System.IntPtr.Zero) return string.Empty;
+        return System.Runtime.InteropServices.Marshal.PtrToStringUTF8(p) ?? string.Empty;
+    }
+    private static byte[] MarshalPtrToByteArray(System.IntPtr ptr, System.UIntPtr size)
+    {
+        if (ptr == System.IntPtr.Zero || (ulong)size == 0UL) return System.Array.Empty<byte>();
+        var _res = new byte[(int)(ulong)size];
+        System.Runtime.InteropServices.Marshal.Copy(ptr, _res, 0, _res.Length);
+        return _res;
+    }
+    // ── End helpers ────────────────────────────────────────────────────────────
+
 
     [DllImport("Adamantite.cpp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr VfsFontLoader_LoadFont(IntPtr instance, IntPtr vfs, IntPtr fontPath);
-    public IntPtr LoadFont(IntPtr vfs, IntPtr fontPath)
+    private static extern IntPtr VfsFontLoader_LoadFont(IntPtr vfs, IntPtr fontPath, out UIntPtr _outSize);
+    public static byte[] LoadFont(VfsManager vfs, string fontPath)
     {
-        return VfsFontLoader_LoadFont(_native, vfs, fontPath);
+        var _raw_vfs = vfs._Handle;
+        var _raw_fontPath = MarshalString(fontPath);
+        var _ptr = VfsFontLoader_LoadFont(_raw_vfs, _raw_fontPath, out var _outSize);
+        FreeNative(_raw_fontPath);
+        return MarshalPtrToByteArray(_ptr, _outSize);
     }
 }
